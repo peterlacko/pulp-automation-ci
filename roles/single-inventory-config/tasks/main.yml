@@ -5,12 +5,12 @@
   replace:
     dest="{{automation_dir}}-{{path}}/inventory.yml"
     regexp='pulp\.example\.com'
-    replace="{{hostvars[groups['tag_Name_'+automation_name+'_'+producer_node][0]]['ec2_public_dns_name']}}"
+    replace="{{hostvars[groups['tag_Name_'+automation_name+'_'+tested_version|replace('.','_')+'_'+automation_os+'_'+producer_node][0]]['ec2_public_dns_name']}}"
 - name: set consumer in file
   replace:
     dest="{{automation_dir}}-{{path}}/inventory.yml"
     regexp='consumer\.example\.com'
-    replace="{{hostvars[groups['tag_Name_'+automation_name+'_'+consumer_node][0]]['ec2_public_dns_name']}}"
+    replace="{{hostvars[groups['tag_Name_'+automation_name+'_'+tested_version|replace('.','_')+'_'+automation_os+'_'+consumer_node][0]]['ec2_public_dns_name']}}"
 - name: set path to certificate
   replace:
     dest="{{automation_dir}}-{{path}}/inventory.yml"

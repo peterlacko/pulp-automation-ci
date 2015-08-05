@@ -2,13 +2,13 @@
 # vim:ft=ansible:
 - name: Configure node - install and enable pulp 
   hosts:
-    - "tag_Name_{{automation_name}}_single_node"
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
   roles:
     - set-package-manager
 
 - name: Configure node - install and enable pulp 
   hosts:
-    - "tag_Name_{{automation_name}}_single_node"
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
   tasks:
     - name: get hostname 
       shell: curl -# http://169.254.169.254/latest/meta-data/public-hostname
@@ -37,7 +37,7 @@
 
 - name: Configure node - setup repositories 
   hosts:
-    - "tag_Name_{{automation_name}}_single_node"
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
   roles:
     - epel-repo-setup
     - { role: stable-repos-setup, when: test_stable|bool==True}
@@ -45,7 +45,7 @@
 
 - name: Configure node - install and enable pulp 
   hosts:
-    - "tag_Name_{{automation_name}}_single_node"
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
   tasks:
     - name: install extras packages for redhat
       action: "{{package_manager}} name=ftp{{':'}}//ftp.muug.mb.ca/mirror/centos/7.1.1503/extras/x86_64/Packages/python-blinker-1.3-2.el7.noarch.rpm state=present"

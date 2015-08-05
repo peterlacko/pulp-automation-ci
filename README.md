@@ -1,3 +1,4 @@
+## OBSOLETE, REWRITE
 ## Pulp-automation deployment using ansible
 * each deployment (specified by automation_name, including bucket) should be used for testing of single pulp version (ie. do not mix 2.7-testing with 2.7-devel) where different testing scenarios run from single automation node.
 * ansible is idempotent, thus new nodes won't be deployed if node with given name already exists

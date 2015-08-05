@@ -2,32 +2,54 @@
     name: 'ec2-pulp-{version}-automation-on-{os}'
     concurrent: true
     disabled: false
-    workspace: /var/lib/jenkins/jenkins-jobs-pulp{version}-{os}
-    display-name: 'pulp automation on ec2'
+    workspace: /var/lib/jenkins/jenkins-jobs-pulp-{version}-{os}
+    display-name: 'ec2-pulp-{version}-automation-on-{os}'
     description: 'Do not edit this job through the web!'
-#    scm:
-#      - git:
-#          url: https://github.com/RedHatQE/pulp-automation/tree/master/deploy/ansible-new.git
-#          branches: origin/master
-#          skip-tag: true
     builders:
       - inject:
           properties-file: /var/lib/jenkins/secrets/ec2-properties.prop
-          properties-content: TESTED_VERSION = {version}
-          properties-content: EC2_PULP_OS = {os}
+          properties-content: |
+            TESTED_VERSION={version}
+            EC2_PULP_OS={os}
       - shell: |
-          rm -rf pulp-automation
-          git clone https://github.com/RedHatQE/pulp-automation
-          cd pulp-automation/deploy/ansible-new/
-          ansible-playbook -i ec2.py automation-deploy.yml --extra-vars @global_vars.yml -vvvv
+          rm -rf pulp-automation-ci
+          git clone https://github.com/peterlacko/pulp-automation-ci
+          cd pulp-automation-ci
+          ansible-playbook -i ec2.py automation-deploy.yml --extra-vars @global_vars.yml
+          ansible-playbook -i ec2.py automation-configure.yml --extra-vars @global_vars.yml
+          ansible-playbook -i ec2.py automation-run.yml --extra-vars @global_vars.yml
     triggers:
       - timed: '@daily'
+
+- job-template:
+    name: 'ec2-setup-automation-runner'
+    concurrent: true
+    disabled: false
+    workspace: /var/lib/jenkins/jenkins-jobs-automation-runner
+    description: 'Do not edit this job through the web!'
+    builders:
+      - inject:
+          properties-file: /var/lib/jenkins/secrets/ec2-properties.prop
+          properties-content: |
+            TESTED_VERSION={version}
+            EC2_PULP_OS={os}
+      - shell: |
+          rm -rf pulp-automation-ci
+          git clone https://github.com/peterlacko/pulp-automation-ci
+          cd pulp-automation-ci
+          ansible-playbook -i ec2.py automation-runner-deploy.yml --extra-vars @global_vars.yml
+          ansible-playbook -i ec2.py automation-runner-configure.yml --extra-vars @global_vars.yml
+    triggers:
+      - timed: '@monthly'
+
           
 - project:
     name: pulp-automation
     jobs:
       - 'ec2-pulp-{version}-automation-on-{os}'
+      - 'ec2-setup-automation-runner'
     version:
       - 2.6
     os:
+      - rhel6
       - rhel7

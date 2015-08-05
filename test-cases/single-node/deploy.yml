@@ -8,20 +8,22 @@
 - name: Deploy a machine for single node testing
   hosts: localhost
   tasks:
+    - name: dfdsafdsadddGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+      debug: var=inventory_dir
     - name: Launch ec2 single node testing instance
       ec2:
         key_name: "{{ key_name }}"
         group: "{{ pulp_sg }}"
         instance_type: "{{ instance_type }}"
-        image: "{{ ami_single_node }}"
+        image: "{{ automation_ami }}"
         wait: true
         region: "{{ region }}"
         monitoring: no
         assign_public_ip: no
         instance_tags:
-          Name: "{{automation_name}}_single_node" 
+          Name: "{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node" 
         count_tag:
-          Name: "{{automation_name}}_single_node" 
+          Name: "{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node" 
         exact_count: 1
       register: ec2
     - name: Add new instance to host group
@@ -32,7 +34,7 @@
       with_items: ec2.instances
 
 - name: Enable root access and
-  remote_user: "{{hostvars['localhost']['rem_user_single_node']}}"
+  remote_user: "{{hostvars['localhost']['automation_rem_user']}}"
   hosts: launched
   tasks:
     - name: Enable root access
@@ -41,7 +43,7 @@
       shell: "{{item}}"
       with_items:
         - "sed -i s,disable_root:.*,disable_root:0, /etc/cloud/cloud.cfg"
-        - "cat ~{{hostvars['localhost']['rem_user_single_node']}}/.ssh/authorized_keys > /root/.ssh/authorized_keys"
+        - "cat ~{{hostvars['localhost']['automation_rem_user']}}/.ssh/authorized_keys > /root/.ssh/authorized_keys"
 
 - name: Update packages
   hosts: launched

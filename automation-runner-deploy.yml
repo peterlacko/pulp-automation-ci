@@ -1,11 +1,37 @@
 ---
-- name: Deploy automation runner
+- name: set ami and user
   hosts: localhost
   roles:
-    - automation-runner-deploy
+    - ami-user-set
+
+- name: Deploy automation runner
+  hosts: localhost
+  tasks:
+    - name: Launch ec2 automation_runner instance
+      ec2:
+        key_name: "{{ key_name }}"
+        group: "{{ pulp_sg }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami_auto_runner }}"
+        wait: true
+        region: "{{ region }}"
+        monitoring: no
+        assign_public_ip: no
+        instance_tags:
+          Name: "{{ automation_name }}_automation_runner" 
+        count_tag:
+          Name: "{{ automation_name }}_automation_runner" 
+        exact_count: 1
+      register: ec2
+    - name: Add new instance to host group
+      add_host: hostname={{ item.public_ip }} groupname=launched
+      with_items: ec2.instances
+    - name: Wait for SSH to come up
+      wait_for: host={{ item.public_dns_name }} port=22 delay=60 timeout=320 state=started
+      with_items: ec2.instances
 
 - name: Enable root access on new machine
-  remote_user: "{{rem_user_auto_runner}}"
+  remote_user: "{{hostvars['localhost']['rem_user_auto_runner']}}"
   hosts: launched
   tasks:
     - name: Enable root access
@@ -14,7 +40,7 @@
       shell: "{{item}}"
       with_items:
         - "sed -i s,disable_root:.*,disable_root:0, /etc/cloud/cloud.cfg"
-        - "cat ~{{rem_user_auto_runner}}/.ssh/authorized_keys > /root/.ssh/authorized_keys"
+        - "cat ~{{hostvars['localhost']['rem_user_auto_runner']}}/.ssh/authorized_keys > /root/.ssh/authorized_keys"
 
 - name: Upgrade all packages to latest version
   hosts: launched

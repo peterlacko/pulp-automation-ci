@@ -5,9 +5,9 @@
     - "tag_Name_{{automation_name}}_automation_runner"
   tasks:
     - name: remove previous automation
-      file: path={{automation_dir}}-single-stable-to-latest-stable state=absent
+      file: path={{automation_dir}}-single-stable-to-latest-stable-{{tested_version}}-{{automation_os}} state=absent
     - name: checkout automation repositories
-      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-stable-to-latest-stable force=yes"
+      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-stable-to-latest-stable-{{tested_version}}-{{automation_os}} force=yes"
       #TODO: ugly! copy remote-remote
     - name: fetch pubkey for copying to other hosts
       fetch: src=/root/.ssh/test_rsa.pub dest=./ flat=yes
@@ -16,12 +16,12 @@
   hosts:
     - "tag_Name_{{automation_name}}_automation_runner"
   roles:
-    - {role: single-inventory-config, path: single-stable-to-latest-stable, producer_node: single_stable_to_latest, consumer_node: single_stable_to_latest}
-    - {role: pulp-run-setup, path: single-stable-to-latest-stable}
+    - {role: single-inventory-config, path: "single-stable-to-latest-stable-{{tested_version}}-{{automation_os}}", producer_node: single_stable_to_latest, consumer_node: single_stable_to_latest}
+    - {role: pulp-run-setup, path: "single-stable-to-latest-stable-{{tested_version}}-{{automation_os}}"}
 
 - name: Configure single node 
   hosts:
-    - "tag_Name_{{automation_name}}_single_stable_to_latest"
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest"
   tasks:
     - name: ensure automation_runner is between authorized hosts
       authorized_key: user=root key="{{ lookup('file', 'test_rsa.pub') }}"
@@ -31,7 +31,7 @@
 
 - name: Configure single node 
   hosts:
-    - "tag_Name_{{automation_name}}_single_stable_to_latest"
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest"
   roles:
     - cleanup-pulp
 
@@ -42,6 +42,9 @@
     - name: remove public key from local dir 
       local_action: file path=./test_rsa.pub state=absent
     - name: copy certificate file to automation runner
-      command: "scp -o StrictHostKeyChecking=no -i /root/.ssh/test_rsa root@{{hostvars[groups['tag_Name_'+automation_name+'_single_stable_to_latest'][0]]['ec2_public_dns_name']}}{{':'}}/etc/pki/tls/certs/myca.crt /etc/pki/tls/certs/"
+      command: "scp -o StrictHostKeyChecking=no -i /root/.ssh/test_rsa root@{{hostvars[groups['tag_Name_'+automation_name+'_'+tested_version|replace('.','_')+'_'+automation_os+'_single_stable_to_latest'][0]]['ec2_public_dns_name']}}{{':'}}/etc/pki/tls/certs/myca.crt /etc/pki/tls/certs/"
     - name: run all tests on single node
-      command: "chdir={{automation_dir}}-single-stable-to-latest-stable nosetests -vs --with-xunit"
+      command: "chdir={{automation_dir}}-single-stable-to-latest-stable-{{tested_version}}-{{automation_os}} nosetests -vs --with-xunit"
+      ignore_errors: True
+    - name: fetch file with results
+      fetch: "src={{automation_dir}}-single-stable-to-latest-stable-{{tested_version}}-{{automation_os}}/nosetests.xml dest={{inventory_dir}}/results-single-stable-to-latest-stable-{{tested_version}}-{{automation_os}}.xml flat=yes"

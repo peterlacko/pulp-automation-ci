@@ -17,8 +17,7 @@ instance_type: "{{lookup ('env', 'EC2_INSTANCE_TYPE')}}"
 # set os to: fedora20 / fedora22 / rhel6 / rhel7, keep auto_runner on rhel7
 reposerver_os: fedora22
 auto_runner_os: rhel7
-single_node_os: "{{lookup ('env', 'EC2_PULP_OS')}}"
-single_stable_to_latest_os:  "{{lookup ('env', 'EC2_PULP_OS')}}"
+automation_os: "{{lookup ('env', 'EC2_PULP_OS')}}"
 
 # security groups names: default simply ssh and pulp
 ssh_sg: "{{lookup ('env', 'EC2_SSH_SG')}}"

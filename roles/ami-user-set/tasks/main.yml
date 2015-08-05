@@ -31,31 +31,16 @@
   when: auto_runner_os =="rhel6"
 - name: set ami and user based on Operating System
   set_fact:
-    ami_single_node: "{{ami_fedora22}}"
-    rem_user_single_node: fedora
-  when: single_node_os =="fedora22"
+    automation_ami: "{{ami_fedora22}}"
+    automation_rem_user: fedora
+  when: automation_os =="fedora22"
 - name: set ami and user based on Operating System
   set_fact:
-    ami_single_node: "{{ami_rhel7}}"
-    rem_user_single_node: ec2-user
-  when: single_node_os =="rhel7"
+    automation_ami: "{{ami_rhel7}}"
+    automation_rem_user: ec2-user
+  when: automation_os =="rhel7"
 - name: set ami and user based on Operating System
   set_fact:
-    ami_single_node: "{{ami_rhel6}}"
-    rem_user_single_node: ec2-user
-  when: single_node_os =="rhel6"
-- name: set ami and user based on Operating System
-  set_fact:
-    ami_single_stable_to_latest: "{{ami_fedora22}}"
-    rem_user_single_stable_to_latest: fedora
-  when: single_stable_to_latest_os =="fedora22"
-- name: set ami and user based on Operating System
-  set_fact:
-    ami_single_stable_to_latest: "{{ami_rhel7}}"
-    rem_user_single_stable_to_latest: ec2-user
-  when: single_stable_to_latest_os =="rhel7"
-- name: set ami and user based on Operating System
-  set_fact:
-    ami_single_stable_to_latest: "{{ami_rhel6}}"
-    rem_user_single_stable_to_latest: ec2-user
-  when: single_stable_to_latest_os =="rhel6"
+    automation_ami: "{{ami_rhel6}}"
+    automation_rem_user: ec2-user
+  when: automation_os =="rhel6"
