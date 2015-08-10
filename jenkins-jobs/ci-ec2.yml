@@ -5,38 +5,63 @@
     workspace: /var/lib/jenkins/jenkins-jobs-pulp-{version}-{os}
     display-name: 'ec2-pulp-{version}-automation-on-{os}'
     description: 'Do not edit this job through the web!'
+    wrappers:
+      - credentials-binding:
+          - zip-file:
+              credential-id: bae76e51-1edd-464c-9392-38014987ebd2
+              variable: ANSIBLE_EC2_CREDENTIALS
+      - workspace-cleanup:
+          include:
+            - "*.pem"
     builders:
       - inject:
-          properties-file: /var/lib/jenkins/secrets/ec2-properties.prop
+          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
           properties-content: |
             TESTED_VERSION={version}
+            TESTED_BRANCH={branch}
             EC2_PULP_OS={os}
       - shell: |
           rm -rf pulp-automation-ci
           git clone https://github.com/peterlacko/pulp-automation-ci
           cd pulp-automation-ci
+          cp -v $ANSIBLE_EC2_CREDENTIALS/ansible-pulp-automation-placko.pem .
           ansible-playbook -i ec2.py automation-deploy.yml --extra-vars @global_vars.yml
           ansible-playbook -i ec2.py automation-configure.yml --extra-vars @global_vars.yml
           ansible-playbook -i ec2.py automation-run.yml --extra-vars @global_vars.yml
     triggers:
-      - timed: '@daily'
+      - build-result:
+          groups:
+            - jobs:
+                - build-automation-repo-{version}-{branch}
 
 - job-template:
     name: 'ec2-setup-automation-runner'
+    displayname: 'ec2-setup-automation-runner'
     concurrent: true
     disabled: false
     workspace: /var/lib/jenkins/jenkins-jobs-automation-runner
     description: 'Do not edit this job through the web!'
+    wrappers:
+      - credentials-binding:
+          - zip-file:
+              credential-id: bae76e51-1edd-464c-9392-38014987ebd2
+              variable: ANSIBLE_EC2_CREDENTIALS
+      - workspace-cleanup:
+          include:
+            - "*.pem"
     builders:
       - inject:
-          properties-file: /var/lib/jenkins/secrets/ec2-properties.prop
+          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
           properties-content: |
             TESTED_VERSION={version}
+            TESTED_BRANCH={branch}
             EC2_PULP_OS={os}
       - shell: |
+          sudo yum -y install python-boto
           rm -rf pulp-automation-ci
           git clone https://github.com/peterlacko/pulp-automation-ci
           cd pulp-automation-ci
+          cp -v $ANSIBLE_EC2_CREDENTIALS/ansible-pulp-automation-placko.pem .
           ansible-playbook -i ec2.py automation-runner-deploy.yml --extra-vars @global_vars.yml
           ansible-playbook -i ec2.py automation-runner-configure.yml --extra-vars @global_vars.yml
     triggers:
@@ -50,6 +75,8 @@
       - 'ec2-setup-automation-runner'
     version:
       - 2.6
+    branch:
+      - testing
     os:
       - rhel6
       - rhel7
