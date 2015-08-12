@@ -1,25 +1,15 @@
 - job-template:
-    name: 'ec2-pulp-{version}-automation-on-{os}'
+    name: 'ec2-pulp-{version}-{branch}-automation-on-{os}'
     concurrent: true
     disabled: false
     workspace: /var/lib/jenkins/jenkins-jobs-pulp-{version}-{os}
     display-name: 'ec2-pulp-{version}-automation-on-{os}'
     description: 'Do not edit this job through the web!'
+    node: 'rhel7-np'
     wrappers:
-      - credentials-binding:
-          - zip-file:
-              credential-id: bae76e51-1edd-464c-9392-38014987ebd2
-              variable: ANSIBLE_EC2_CREDENTIALS
-      - workspace-cleanup:
-          include:
-            - "*.pem"
+      - ci-ec2-wrapper
     builders:
-      - inject:
-          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
-          properties-content: |
-            TESTED_VERSION={version}
-            TESTED_BRANCH={branch}
-            EC2_PULP_OS={os}
+      - ci-ec2-builder-credentials
       - shell: |
           rm -rf pulp-automation-ci
           git clone https://github.com/peterlacko/pulp-automation-ci
@@ -33,6 +23,9 @@
           groups:
             - jobs:
                 - build-automation-repo-{version}-{branch}
+    publishers:
+      # Take the node offline so that another build doesn't pile on
+      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
 
 - job-template:
     name: 'ec2-setup-automation-runner'
@@ -41,21 +34,11 @@
     disabled: false
     workspace: /var/lib/jenkins/jenkins-jobs-automation-runner
     description: 'Do not edit this job through the web!'
+    node: 'rhel7-np'
     wrappers:
-      - credentials-binding:
-          - zip-file:
-              credential-id: bae76e51-1edd-464c-9392-38014987ebd2
-              variable: ANSIBLE_EC2_CREDENTIALS
-      - workspace-cleanup:
-          include:
-            - "*.pem"
+      - ci-ec2-wrapper
     builders:
-      - inject:
-          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
-          properties-content: |
-            TESTED_VERSION={version}
-            TESTED_BRANCH={branch}
-            EC2_PULP_OS={os}
+      - ci-ec2-builder-credentials
       - shell: |
           sudo yum -y install python-boto
           rm -rf pulp-automation-ci
@@ -66,12 +49,15 @@
           ansible-playbook -i ec2.py automation-runner-configure.yml --extra-vars @global_vars.yml
     triggers:
       - timed: '@monthly'
+    publishers:
+      # Take the node offline so that another build doesn't pile on
+      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
 
           
 - project:
     name: pulp-automation
     jobs:
-      - 'ec2-pulp-{version}-automation-on-{os}'
+      - 'ec2-pulp-{version}-{branch}-automation-on-{os}'
       - 'ec2-setup-automation-runner'
     version:
       - 2.6

@@ -4,12 +4,15 @@
   hosts: localhost
   roles:
     - ami-user-set
+- name: set ami and user
+  hosts: localhost
+  tasks:
+    - name: debuggggg
+      debug: var=automation_os
 
 - name: Deploy a machine for single node testing
   hosts: localhost
   tasks:
-    - name: dfdsafdsadddGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-      debug: var=inventory_dir
     - name: Launch ec2 single node testing instance
       ec2:
         key_name: "{{ key_name }}"

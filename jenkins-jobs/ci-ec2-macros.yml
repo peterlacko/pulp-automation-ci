@@ -1,0 +1,19 @@
+- wrapper:
+    name: ci-ec2-wrapper
+    wrappers:
+      - credentials-binding:
+          - zip-file:
+              credential-id: bae76e51-1edd-464c-9392-38014987ebd2
+              variable: ANSIBLE_EC2_CREDENTIALS
+      - workspace-cleanup:
+          include:
+            - "*.pem"
+- builder:
+    name: ci-ec2-builder-credentials
+    builders:
+      - inject:
+          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
+          properties-content: |
+            TESTED_VERSION={version}
+            TESTED_BRANCH={branch}
+            EC2_PULP_OS={os}
