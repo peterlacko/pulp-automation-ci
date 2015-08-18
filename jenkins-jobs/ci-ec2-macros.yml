@@ -8,12 +8,3 @@
       - workspace-cleanup:
           include:
             - "*.pem"
-- builder:
-    name: ci-ec2-builder-credentials
-    builders:
-      - inject:
-          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
-          properties-content: |
-            TESTED_VERSION={version}
-            TESTED_BRANCH={branch}
-            EC2_PULP_OS={os}

@@ -2,15 +2,21 @@
     name: 'ec2-pulp-{version}-{branch}-automation-on-{os}'
     concurrent: true
     disabled: false
-    workspace: /var/lib/jenkins/jenkins-jobs-pulp-{version}-{os}
-    display-name: 'ec2-pulp-{version}-automation-on-{os}'
+    workspace: /home/jenkins/jenkins-jobs-pulp-{version}-{branch}-{os}
+    display-name: 'ec2-pulp-{version}-{branch}-automation-on-{os}'
     description: 'Do not edit this job through the web!'
-    node: 'rhel7-np'
+    node: 'f22-np'
     wrappers:
       - ci-ec2-wrapper
     builders:
-      - ci-ec2-builder-credentials
+      - inject:
+          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
+          properties-content: |
+            TESTED_VERSION={version}
+            TESTED_BRANCH={branch}
+            EC2_PULP_OS={os}
       - shell: |
+          sudo yum -y install python-boto python-six ansible
           rm -rf pulp-automation-ci
           git clone https://github.com/peterlacko/pulp-automation-ci
           cd pulp-automation-ci
@@ -20,27 +26,35 @@
           ansible-playbook -i ec2.py automation-run.yml --extra-vars @global_vars.yml
     triggers:
       - build-result:
+          cron: '* * * * *'
           groups:
             - jobs:
                 - build-automation-repo-{version}-{branch}
     publishers:
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
+      - junit:
+          results: "**/*.xml"
 
 - job-template:
     name: 'ec2-setup-automation-runner'
     displayname: 'ec2-setup-automation-runner'
     concurrent: true
     disabled: false
-    workspace: /var/lib/jenkins/jenkins-jobs-automation-runner
+    workspace: /home/jenkins/jenkins-jobs-pulp-automation-runner
     description: 'Do not edit this job through the web!'
-    node: 'rhel7-np'
+    node: 'f22-np'
     wrappers:
       - ci-ec2-wrapper
     builders:
-      - ci-ec2-builder-credentials
+      - inject:
+          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
+          properties-content: |
+            TESTED_VERSION={version}
+            TESTED_BRANCH={branch}
+            EC2_PULP_OS={os}
       - shell: |
-          sudo yum -y install python-boto
+          sudo yum -y install python-boto python-six ansible
           rm -rf pulp-automation-ci
           git clone https://github.com/peterlacko/pulp-automation-ci
           cd pulp-automation-ci
@@ -58,9 +72,10 @@
     name: pulp-automation
     jobs:
       - 'ec2-pulp-{version}-{branch}-automation-on-{os}'
-      - 'ec2-setup-automation-runner'
+        #- 'ec2-setup-automation-runner'
     version:
       - 2.6
+      - 2.7
     branch:
       - testing
     os:

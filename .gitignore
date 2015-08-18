@@ -45,3 +45,9 @@ nosetests.xml
 
 # properties file
 *.prop
+
+# jenkins jobs and tests results
+*.xml
+
+# debug output files
+*.out

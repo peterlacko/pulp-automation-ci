@@ -1,0 +1,13 @@
+# modify according to your needs
+EC2_KEY_NAME=<your key name>
+EC2_INSTANCE_TYPE=m3.large 
+EC2_REGION=eu-west-1
+EC2_SSH_SG=ssh
+EC2_PULP_SG=pulp
+UPGRADING_FROM=2.6
+AUTOMATION_NAME=<name of automation>
+AWS_SECRET_ACCESS_KEY=<your aws credentials>
+AWS_ACCESS_KEY_ID=<your aws credentials>
+FORCE_KEYPAIR=False
+REPOSERVER_NAME=<optional, name of server for building pulp rpms>
+BUCKET_NAME=<optional, name of s3 bucket for repos>
