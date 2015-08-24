@@ -54,5 +54,7 @@
     - name: run all tests on single node
       command: "chdir={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} nosetests -vs --with-xunit"
       ignore_errors: True
+      tags:
+        - run_automation
     - name: fetch file with results
       fetch: "src={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}}/nosetests.xml dest={{inventory_dir}}/results-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}}.xml flat=yes"

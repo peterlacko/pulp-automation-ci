@@ -9,7 +9,7 @@ fi
  
 # run this file after updating properties file
 echo -n "Enter path to properties file: "
-read PROP_FILE
+read -e PROP_FILE
 read -p "Enter pulp version to test (2.6 or 2.7), default 2.6: " TESTED_VERSION
 TESTED_VERSION=${TESTED_VERSION:-'2.6'}
 read -p "Enter repo branch you want to use (dev or testing), default testing: " TESTED_BRANCH

@@ -7,7 +7,7 @@
     - name: remove previous automation
       file: path={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}} state=absent
     - name: checkout automation repositories
-      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}} version=devel force=yes"
+      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}} force=yes"
       #TODO: ugly! copy remote-remote
     - name: fetch pubkey for copying to other hosts
       fetch: src=/root/.ssh/test_rsa.pub dest=./ flat=yes
@@ -47,5 +47,7 @@
     - name: run all tests on single node
       command: "chdir={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}} nosetests --with-xunit"
       ignore_errors: True
+      tags:
+        - run_automation
     - name: fetch file with results
       fetch: "src={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}}/nosetests.xml dest={{inventory_dir}}/results-single-node-{{tested_version}}-{{automation_os}}.xml flat=yes"
