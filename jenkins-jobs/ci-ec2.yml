@@ -25,11 +25,14 @@
           ansible-playbook -i ec2.py automation-configure.yml --extra-vars @global_vars.yml
           ansible-playbook -i ec2.py automation-run.yml --extra-vars @global_vars.yml
     triggers:
-      - build-result:
-          cron: '* * * * *'
-          groups:
-            - jobs:
-                - build-automation-repo-{version}-{branch}
+      - timed: '@daily'
+      #- build-result:
+      #    cron: '* * * * *'
+      #    groups:
+      #      - jobs:
+      #          - build-automation-repo-{version}-{branch}
+      #        results:
+      #          - success
     publishers:
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
@@ -61,8 +64,8 @@
           cp -v $ANSIBLE_EC2_CREDENTIALS/ansible-pulp-automation-placko.pem .
           ansible-playbook -i ec2.py automation-runner-deploy.yml --extra-vars @global_vars.yml
           ansible-playbook -i ec2.py automation-runner-configure.yml --extra-vars @global_vars.yml
-    triggers:
-      - timed: '@monthly'
+    #triggers:
+    #  - timed: '@monthly'
     publishers:
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
@@ -75,9 +78,9 @@
         #- 'ec2-setup-automation-runner'
     version:
       - 2.6
-      - 2.7
+        #- 2.7
     branch:
       - testing
     os:
-      - rhel6
+      #- rhel6
       - rhel7

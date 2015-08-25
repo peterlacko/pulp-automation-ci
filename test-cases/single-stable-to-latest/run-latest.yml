@@ -13,7 +13,7 @@
     - name: remove previous automation
       file: path={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} state=absent
     - name: checkout automation repositories
-      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} force=yes"
+      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} version=devel force=yes"
 
 - name: Configure inventory
   hosts:
@@ -52,7 +52,7 @@
     - "tag_Name_{{automation_name}}_automation_runner"
   tasks:
     - name: run all tests on single node
-      command: "chdir={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} nosetests -vs --with-xunit"
+      command: "chdir={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} nosetests -vs --with-xunit --xunit-testsuite-name=results-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}}"
       ignore_errors: True
       tags:
         - run_automation
