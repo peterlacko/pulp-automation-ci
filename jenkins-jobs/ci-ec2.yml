@@ -24,6 +24,9 @@
           ansible-playbook -i ec2.py automation-deploy.yml --extra-vars @global_vars.yml
           ansible-playbook -i ec2.py automation-configure.yml --extra-vars @global_vars.yml
           ansible-playbook -i ec2.py automation-run.yml --extra-vars @global_vars.yml
+      - shell: |
+          unset AWS_ACCESS_KEY_ID
+          unset AWS_SECRET_ACCESS_KEY
     triggers:
       - timed: '@daily'
       #- build-result:
@@ -37,7 +40,7 @@
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
       - junit:
-          results: "**/*.xml"
+          results: "**/results-single-node-{version}-{os}.xml,**/results-single-stable-to-latest-latest-{version}-{os}.xml,**/results-single-stable-to-latest-stable-{version}-{os}.xml"
 
 - job-template:
     name: 'ec2-setup-automation-runner'
@@ -64,6 +67,9 @@
           cp -v $ANSIBLE_EC2_CREDENTIALS/ansible-pulp-automation-placko.pem .
           ansible-playbook -i ec2.py automation-runner-deploy.yml --extra-vars @global_vars.yml
           ansible-playbook -i ec2.py automation-runner-configure.yml --extra-vars @global_vars.yml
+      - shell: |
+          unset AWS_ACCESS_KEY_ID
+          unset AWS_SECRET_ACCESS_KEY
     #triggers:
     #  - timed: '@monthly'
     publishers:
@@ -75,12 +81,12 @@
     name: pulp-automation
     jobs:
       - 'ec2-pulp-{version}-{branch}-automation-on-{os}'
-        #- 'ec2-setup-automation-runner'
+      - 'ec2-setup-automation-runner'
     version:
       - 2.6
-        #- 2.7
+      - 2.7
     branch:
       - testing
     os:
-      #- rhel6
+      - rhel6
       - rhel7

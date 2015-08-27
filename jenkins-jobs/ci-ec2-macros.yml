@@ -5,6 +5,12 @@
           - zip-file:
               credential-id: bae76e51-1edd-464c-9392-38014987ebd2
               variable: ANSIBLE_EC2_CREDENTIALS
+          - text:
+              credential-id: d476a914-f96c-4d91-902d-456b91f6e38e
+              variable: AWS_SECRET_ACCESS_KEY
+          - text:
+              credential-id: e924c093-a9cd-47fd-9aae-3dfe615b4711
+              variable: AWS_ACCESS_KEY_ID
       - workspace-cleanup:
           include:
             - "*.pem"
