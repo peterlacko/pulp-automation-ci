@@ -1,0 +1,3 @@
+---
+- name: Let's configure bashrc for comfy debugging
+  template: src=.bashrc dest=~/.bashrc mode=700

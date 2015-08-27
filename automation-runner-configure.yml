@@ -1,12 +1,12 @@
 ---
-- name: Checkout latest automation
+- name: Setup repositories
   hosts:
     - "tag_Name_{{automation_name}}_automation_runner"
   roles:
     - set-package-manager
     - epel-repo-setup
 
-- name: Checkout latest automation
+- name: Prepare environment
   hosts:
     - "tag_Name_{{automation_name}}_automation_runner"
   tasks:
@@ -14,6 +14,7 @@
       action: "{{package_manager}} name={{ item }} state=present"
       with_items:
         - git
+        - svn
         - python-pip
         - python-devel
         - m2crypto
@@ -23,5 +24,13 @@
         - libxslt-devel
     - pip: name=gevent state=present chdir={{automation_dir}}
     - pip: name=stitches state=present chdir={{automation_dir}}
+    - pip: name=nose-html-reporting state=present
+    - pip: name="http://svn.apache.org/repos/asf/qpid/trunk/qpid/python/" state=present
     - name: generate key for communicating with hosts
       command: "ssh-keygen -f /root/.ssh/test_rsa -N ''"
+
+- name: Prepare environment
+  hosts:
+    - "tag_Name_{{automation_name}}_automation_runner"
+  roles:
+    - bashrc-config

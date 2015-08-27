@@ -1,0 +1,24 @@
+#!/bin/sh
+# modify this file as you wish
+export AWS_SECRET_ACCESS_KEY=<put your credentials>
+export AWS_ACCESS_KEY_ID=<put your credentials>
+# key name for communication with instances, file name should be as $EC2_KEY_NAME.pem
+export EC2_KEY_NAME=
+export FORCE_KEYPAIR='False'
+# use m3.xlarge instead for automation runner
+export EC2_INSTANCE_TYPE='m3.large'
+export EC2_REGION='eu-west-1'
+export EC2_SSH_SG='ssh' # ssh + https
+export EC2_PULP_SG='pulp' # ssh + https + pulp
+export AUTOMATION_NAME=<put name of your automation here>
+# upgrading from stable, so 2.6
+export UPGRADING_FROM='2.6'
+# 2.6, 2.7 or 2.8
+export TESTED_VERSION='2.7'
+# testing, dev or release, see https://repos.fedorapeople.org/repos/pulp/pulp/testing/automation/
+export TESTED_BRANCH='testing'
+# rhel6, rhel7 or fedora22
+export EC2_PULP_OS='rhel7'
+export REPOSERVER_NAME='pulp_automation_pulp_beta_repos'
+export BUCKET_NAME='placko-pulp-beta-repos-ewest-testing'
+

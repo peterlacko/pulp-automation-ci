@@ -1,7 +1,5 @@
-## Setup for local deployment
-* configure templated property file from jenkins-jobs directory
-* run localSetup.sh script which will propmt you to enter rest of configuration settings
-* source output script of previous step
+## Setup for local deployment via ansible
+* configure templated setEnv.sh.template file and source it
 * copy your private key to .
 * **Tags:** you can specify which tasks from playbook should run by --tags resp which should be skipped by --skip-tags, supported tags for playbooks are in []
 * set up automation runner node as follows
@@ -14,9 +12,8 @@
 * results will be present in local xml JUnit file
 * for running sigle tests, try your own configuration, run commands, etc, you can still ssh into automation runner or automation node
 
-
 ## Setup for jenkins
-Coming Soon
+Coming
  
 #### Terminate selected instances
 Add instances to terminate to playbook and run: 
