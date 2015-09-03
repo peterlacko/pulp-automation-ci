@@ -45,12 +45,12 @@
     - name: copy certificate file to automation runner
       command: "scp -o StrictHostKeyChecking=no -i /root/.ssh/test_rsa root@{{hostvars[groups['tag_Name_'+automation_name+'_'+tested_version|replace('.','_')+'_'+automation_os+'_single_node'][0]]['ec2_public_dns_name']}}{{':'}}/etc/pki/tls/certs/myca.crt {{automation_dir}}-single-node-{{tested_version}}-{{automation_os}}/"
     - name: run all tests on single node
-      #command: "chdir={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}} nosetests --with-xunit --xunit-testsuite-name=results-single-node-{{tested_version}}-{{automation_os}}"
-      command: "chdir={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}} nosetests --with-html"
+      command: "chdir={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}} nosetests --with-xunit"
       ignore_errors: True
       tags:
         - run_automation
+      #command: "chdir={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}} nosetests --with-html"
     - name: fetch file with results
-      fetch: "src={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}}/nosetests.html dest={{inventory_dir}}/html/{{tested_version}}-{{automation_os}}-single-node.html flat=yes"
+      fetch: "src={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}}/nosetests.xml dest={{inventory_dir}}/ flat=yes"
       tags:
         - run_automation

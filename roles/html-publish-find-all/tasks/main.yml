@@ -1,4 +1,0 @@
----
-- name: get all html files within html/ directory
-  find: "paths={{inventory_dir}}/html patterns=*.html"
-  register: html_result_files

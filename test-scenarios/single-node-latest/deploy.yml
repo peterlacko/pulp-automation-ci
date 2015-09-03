@@ -4,11 +4,6 @@
   hosts: localhost
   roles:
     - ami-user-set
-- name: set ami and user
-  hosts: localhost
-  tasks:
-    - name: debuggggg
-      debug: var=automation_os
 
 - name: Deploy a machine for single node testing
   hosts: localhost

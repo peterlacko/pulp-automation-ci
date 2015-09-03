@@ -1,9 +1,4 @@
 ---
-- include: test-cases/single-node/run.yml
-- include: test-cases/single-stable-to-latest/run-stable.yml
-- include: test-cases/single-stable-to-latest/run-latest.yml
-- name: Create index file for publishing results
-  hosts: localhost
-  roles:
-    - html-publish-find-all
-    - html-publish-create-index
+- include: test-scenarios/single-node-latest/run.yml
+- include: test-scenarios/single-node-stable/run-stable.yml
+- include: test-scenarios/single-node-upgrade/run-latest.yml

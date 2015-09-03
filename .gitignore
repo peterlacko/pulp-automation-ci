@@ -51,3 +51,6 @@ nosetests.xml
 
 # debug output files
 *.out
+
+# public keys
+*.pub

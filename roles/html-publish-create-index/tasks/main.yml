@@ -1,3 +1,0 @@
----
-- name: create index file for test results
-  template: src=index.j2 dest={{inventory_dir}}/html/index.html

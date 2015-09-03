@@ -1,14 +1,16 @@
 - job-template:
   #name: 'ec2-pulp-{version}-{branch}-automation-on-{os}'
-    name: 'ec2-pulp-{version}-{branch}-automation'
-    concurrent: true
+    #name: 'pulp-{version}-{branch}-automation'
+    name: 'pulp-{scenario}-automation'
+    #concurrent: true
     disabled: false
     #workspace: /home/jenkins/jenkins-jobs-pulp-{version}-{branch}-{os}
-    workspace: /tmp/jenkins/jenkins-jobs-pulp-{version}-{branch}
+    workspace: /home/jenkins/jenkins-jobs-pulp-testing
     #display-name: 'ec2-pulp-{version}-{branch}-automation-on-{os}'
-    display-name: 'ec2-pulp-{version}-{branch}-automation'
+    #display-name: 'pulp-{version}-{branch}-automation'
+    display-name: 'pulp-{scenario}-automation'
     description: 'Do not edit this job through the web!'
-    node: 'f22-np'
+    node: f22-np
     project-type: matrix
     axes:
       - axis:
@@ -17,8 +19,14 @@
           values:
             - rhel6
             - rhel7
-    execution-strategy:
-      combination-filter: |
+            - fedora22
+      - axis:
+          type: user-defined
+          name: TESTED_VERSION
+          values:
+            - 2.6
+            - 2.7
+            - 2.8
 
     wrappers:
       - ci-ec2-wrapper
@@ -26,87 +34,43 @@
       - inject:
           properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
           properties-content: |
-            TESTED_VERSION={version}
             TESTED_BRANCH={branch}
       - shell: |
           sudo yum -y install python-boto python-six libselinux-python python-virtualenv
           virtualenv automation --system-site-packages
           source automation/bin/activate
+          pip install --upgrade pip
           pip install git+https://github.com/ansible/ansible
           rm -rf pulp-automation-ci
           git clone https://github.com/peterlacko/pulp-automation-ci
           cd pulp-automation-ci
           cp -v $ANSIBLE_EC2_CREDENTIALS/ansible-pulp-automation-placko.pem .
-          ansible-playbook -i ec2.py automation-deploy.yml --extra-vars @global_vars.yml
-          ansible-playbook -i ec2.py automation-configure.yml --extra-vars @global_vars.yml
-          ansible-playbook -i ec2.py automation-run.yml --extra-vars @global_vars.yml
+          ansible-playbook -i ec2.py test-cases/{scenario}/deploy.yml --extra-vars "@global_vars.yml"
+          ansible-playbook -i ec2.py test-cases/{scenario}/configure.yml --extra-vars "@global_vars.yml"
+          ansible-playbook -i ec2.py test-cases/{scenario}/run.yml --extra-vars "@global_vars.yml"
           deactivate
     triggers:
       - timed: '@daily'
-      #- build-result:
-      #    cron: '* * * * *'
-      #    groups:
-      #      - jobs:
-      #          - build-automation-repo-{version}-{branch}
-      #        results:
-      #          - success
     publishers:
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
-      - html-publisher: 
-          name: "nosetests test results"
-          dir: "pulp-automation-ci/html/"
-          files: "index.html"
-          keep-all: True
-          link-to-last-build: True
-      #- junit:
-      #    results: "**/results-single-node-{version}-{os}.xml,**/results-single-stable-to-latest-latest-{version}-{os}.xml,**/results-single-stable-to-latest-stable-{version}-{os}.xml"
+      - junit:
+          results: "**/nosetests.xml"
 
-#- job-template:
-#    name: 'ec2-setup-automation-runner'
-#    displayname: 'ec2-setup-automation-runner'
-#    concurrent: true
-#    disabled: false
-#    workspace: /home/jenkins/jenkins-jobs-pulp-automation-runner
-#    description: 'Do not edit this job through the web!'
-#    node: 'f22-np'
-#    wrappers:
-#      - ci-ec2-wrapper
-#    builders:
-#      - inject:
-#          properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
-#          properties-content: |
-#            TESTED_VERSION={version}
-#            TESTED_BRANCH={branch}
-#            EC2_PULP_OS={os}
-#      - shell: |
-#          sudo yum -y install python-boto python-six ansible
-#          rm -rf pulp-automation-ci
-#          git clone https://github.com/peterlacko/pulp-automation-ci
-#          cd pulp-automation-ci
-#          cp -v $ANSIBLE_EC2_CREDENTIALS/ansible-pulp-automation-placko.pem .
-#          ansible-playbook -i ec2.py automation-runner-deploy.yml --extra-vars @global_vars.yml
-#          ansible-playbook -i ec2.py automation-runner-configure.yml --extra-vars @global_vars.yml
-#      - shell: |
-#          unset AWS_ACCESS_KEY_ID
-#          unset AWS_SECRET_ACCESS_KEY
-#    #triggers:
-#    #  - timed: '@monthly'
-#    publishers:
-#      # Take the node offline so that another build doesn't pile on
-#      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
-
-          
 - project:
     name: pulp-automation
     jobs:
-      - 'ec2-pulp-{version}-{branch}-automation'
+      - 'pulp-{scenario}-automation'
+    scenario:
+      - single-node-latest
+      - single-node-stable
+      - single-node-upgrade
         # - 'ec2-setup-automation-runner'
-    version:
-      - 2.6
-      - 2.7
+        #    version:
+        #      - 2.6
+        #      - 2.7
     branch:
       - testing
-    #os:
-    #  - rhel6
-    #  - rhel7
+        #    os:
+        #      - rhel6
+        #      - rhel7

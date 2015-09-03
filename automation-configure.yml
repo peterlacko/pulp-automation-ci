@@ -1,3 +1,4 @@
 ---
-- include: test-cases/single-node/configure.yml
-- include: test-cases/single-stable-to-latest/config.yml
+- include: test-scenarios/single-node-latest/configure.yml
+- include: test-scenarios/single-node-stable/configure.yml
+- include: test-scenarios/single-node-upgrade/configure.yml
