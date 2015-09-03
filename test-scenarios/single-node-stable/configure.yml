@@ -41,8 +41,8 @@
   hosts:
     - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest"
   roles:
-    - epel-repo-setup 
     - stable-repos-setup
+    - epel-repo-setup 
 
 - name: Configure node - install and enable pulp 
   hosts:

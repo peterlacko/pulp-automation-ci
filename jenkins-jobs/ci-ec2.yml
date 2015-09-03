@@ -1,13 +1,8 @@
 - job-template:
-  #name: 'ec2-pulp-{version}-{branch}-automation-on-{os}'
-    #name: 'pulp-{version}-{branch}-automation'
     name: 'pulp-{scenario}-automation'
     #concurrent: true
     disabled: false
-    #workspace: /home/jenkins/jenkins-jobs-pulp-{version}-{branch}-{os}
     workspace: /home/jenkins/jenkins-jobs-pulp-testing
-    #display-name: 'ec2-pulp-{version}-{branch}-automation-on-{os}'
-    #display-name: 'pulp-{version}-{branch}-automation'
     display-name: 'pulp-{scenario}-automation'
     description: 'Do not edit this job through the web!'
     node: f22-np
@@ -38,7 +33,7 @@
       - inject:
           properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
           properties-content: |
-            TESTED_BRANCH={branch}
+            TESTED_BRANCH=testing
       - shell: |
           sudo yum -y install python-boto python-six libselinux-python python-virtualenv
           virtualenv automation --system-site-packages
@@ -73,8 +68,8 @@
         #    version:
         #      - 2.6
         #      - 2.7
-    branch:
-      - testing
+        #branch:
+        #- testing
         #    os:
         #      - rhel6
         #      - rhel7
