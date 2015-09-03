@@ -26,7 +26,11 @@
           values:
             - 2.6
             - 2.7
-            - 2.8
+      - axis:
+          type: label-expression
+          name: nodes
+          values:
+            - f22-np
 
     wrappers:
       - ci-ec2-wrapper
@@ -45,9 +49,9 @@
           git clone https://github.com/peterlacko/pulp-automation-ci
           cd pulp-automation-ci
           cp -v $ANSIBLE_EC2_CREDENTIALS/ansible-pulp-automation-placko.pem .
-          ansible-playbook -i ec2.py test-cases/{scenario}/deploy.yml --extra-vars "@global_vars.yml"
-          ansible-playbook -i ec2.py test-cases/{scenario}/configure.yml --extra-vars "@global_vars.yml"
-          ansible-playbook -i ec2.py test-cases/{scenario}/run.yml --extra-vars "@global_vars.yml"
+          ansible-playbook -i ec2.py test-scenarios/{scenario}/deploy.yml --extra-vars "@global_vars.yml"
+          ansible-playbook -i ec2.py test-scenarios/{scenario}/configure.yml --extra-vars "@global_vars.yml"
+          ansible-playbook -i ec2.py test-scenarios/{scenario}/run.yml --extra-vars "@global_vars.yml"
           deactivate
     triggers:
       - timed: '@daily'

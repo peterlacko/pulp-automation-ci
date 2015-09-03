@@ -1,1 +1,5 @@
 ---
+- name: dummy playbook
+  hosts: localhost
+  roles:
+    - dummy-role
