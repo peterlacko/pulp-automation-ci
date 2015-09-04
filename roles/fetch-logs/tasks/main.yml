@@ -1,0 +1,10 @@
+---
+- name: save logs from last 3 hours from system with systemd
+  shell: "journalctl --since '3 hours ago' --no-pager &> logs.log"
+  when: "not (ansible_distribution=='RedHat' and ansible_distribution_version|int<=6)"
+- name: fetch those logs to local machine
+  fetch: src=logs.log dest=. flat=yes
+
+- name: Fetch log file from rhel 6 systems
+  fetch: src=/var/log/messages dest=./logs.log flat=yes
+  when: "ansible_distribution=='RedHat' and ansible_distribution_version|int<=6"

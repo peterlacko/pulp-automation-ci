@@ -55,7 +55,9 @@
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
       - junit:
-          results: "**/nosetests.xml"
+        results: "pulp-automation-ci/nosetests.xml"
+      - archive:
+          artifacts: 'pulp-automation-ci/logs.log"
 
 - project:
     name: pulp-automation
@@ -65,12 +67,3 @@
       - single-node-latest
       - single-node-stable
       - single-node-upgrade
-        # - 'ec2-setup-automation-runner'
-        #    version:
-        #      - 2.6
-        #      - 2.7
-        #branch:
-        #- testing
-        #    os:
-        #      - rhel6
-        #      - rhel7

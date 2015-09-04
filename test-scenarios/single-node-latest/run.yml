@@ -54,3 +54,9 @@
       fetch: "src={{automation_dir}}-single-node-{{tested_version}}-{{automation_os}}/nosetests.xml dest={{inventory_dir}}/ flat=yes"
       tags:
         - run_automation
+
+- name: Fetch logs from remote host
+  hosts: 
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
+  roles:
+    - fetch-logs
