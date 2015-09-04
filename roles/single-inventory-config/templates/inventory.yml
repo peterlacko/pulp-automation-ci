@@ -5,6 +5,7 @@ ROLES:
     url: "https://{{hostvars[groups['tag_Name_'+automation_name+'_'+tested_version|replace('.','_')+'_'+automation_os+'_'+producer_node][0]]['ec2_public_dns_name']}}/"
     hostname: "{{hostvars[groups['tag_Name_'+automation_name+'_'+tested_version|replace('.','_')+'_'+automation_os+'_'+producer_node][0]]['ec2_public_dns_name']}}"
     verify_api_ssl: 'myca.crt'
+    version: "{{tested_version}}"
   qpid: &QPID
     url: "{{hostvars[groups['tag_Name_'+automation_name+'_'+tested_version|replace('.','_')+'_'+automation_os+'_'+producer_node][0]]['ec2_public_dns_name']}}"
   proxy: &SQUID
