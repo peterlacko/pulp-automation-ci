@@ -3,8 +3,8 @@
   shell: "journalctl --since '3 hours ago' --no-pager &> logs.log"
   when: "not (ansible_distribution=='RedHat' and ansible_distribution_version|int<=6)"
 - name: fetch those logs to local machine
-  fetch: src=logs.log dest=. flat=yes
+  fetch: "src=logs.log dest={{inventory_dir}}/ flat=yes"
 
 - name: Fetch log file from rhel 6 systems
-  fetch: src=/var/log/messages dest=./logs.log flat=yes
+  fetch: "src=/var/log/messages dest={{inventory_dir}}/logs.log flat=yes"
   when: "ansible_distribution=='RedHat' and ansible_distribution_version|int<=6"
