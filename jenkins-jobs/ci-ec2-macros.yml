@@ -14,3 +14,57 @@
       - workspace-cleanup:
           include:
             - "*.pem"
+
+- trigger:
+    name: ci-ec2-single-node-latest-trigger
+    triggers:
+      - timed: '@daily'
+
+- trigger:
+    name: ci-ec2-single-node-stable-trigger
+    triggers:
+      - timed: '@daily'
+
+- trigger:
+    name: ci-ec2-single-node-upgrade-trigger
+    triggers:
+      - build-result:
+          groups:
+            - jobs:
+              - ci-ec2-single-node-stable-trigger
+
+
+- publisher:
+    name: ci-ec2-single-node-latest-publisher
+    publishers:
+      # Take the node offline so that another build doesn't pile on
+      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
+      - junit:
+          results: "pulp-automation-ci/nosetests.xml"
+      - archive:
+          artifacts: "pulp-automation-ci/logs.log"
+
+- publisher:
+    name: ci-ec2-single-node-stable-publisher
+    publishers:
+      # Take the node offline so that another build doesn't pile on
+      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
+      - junit:
+          results: "pulp-automation-ci/nosetests.xml"
+      - archive:
+          artifacts: "pulp-automation-ci/logs.log"
+      - trigger-parameterized-builds:
+          - project:
+            - "pulp-single-node-upgrade-automation"
+            trigger-with-no-params: True
+            condition: ALWAYS
+
+- publisher:
+    name: ci-ec2-single-node-upgrade-publisher
+    publishers:
+      # Take the node offline so that another build doesn't pile on
+      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
+      - junit:
+          results: "pulp-automation-ci/nosetests.xml"
+      - archive:
+          artifacts: "pulp-automation-ci/logs.log"

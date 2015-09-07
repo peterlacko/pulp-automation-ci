@@ -50,14 +50,9 @@
           ansible-playbook -i ec2.py test-scenarios/{scenario}/run.yml --extra-vars "@global_vars.yml"
           deactivate
     triggers:
-      - timed: '@daily'
+      - ci-ec2-{scenario}-trigger
     publishers:
-      # Take the node offline so that another build doesn't pile on
-      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
-      - junit:
-          results: "pulp-automation-ci/nosetests.xml"
-      - archive:
-          artifacts: "pulp-automation-ci/logs.log"
+      - ci-ec2-{scenario}-publisher
 
 - project:
     name: pulp-automation
