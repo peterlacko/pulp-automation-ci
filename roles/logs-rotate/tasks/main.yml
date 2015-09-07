@@ -1,4 +1,8 @@
 ---
+- name: touch spooler file
+  file: path=/var/log/spooler state=touch
+- name: touch maillog file
+  file: path=/var/log/maillog state=touch
 - name: rotate logs for rhel 6
   shell: logrotate -f /etc/logrotate.d/syslog
   when: "ansible_distribution=='RedHat' and ansible_distribution_version|int<=6"

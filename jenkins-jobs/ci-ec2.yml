@@ -55,9 +55,9 @@
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
       - junit:
-        results: "pulp-automation-ci/nosetests.xml"
+          results: "pulp-automation-ci/nosetests.xml"
       - archive:
-          artifacts: 'pulp-automation-ci/logs.log"
+          artifacts: "pulp-automation-ci/logs.log"
 
 - project:
     name: pulp-automation
