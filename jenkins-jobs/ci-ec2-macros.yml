@@ -15,15 +15,33 @@
           include:
             - "*.pem"
 
+# ===================================================================
+# ===================================================================
 - trigger:
     name: ci-ec2-single-node-latest-trigger
     triggers:
-      - timed: '@daily'
+      #- timed: '@daily'
+      - build-result:
+          combine: True
+          groups:
+            - jobs:
+                - build-automation-repo-2.6-testing
+                - build-automation-repo-2.7-testing
+              results:
+                - success
 
 - trigger:
     name: ci-ec2-single-node-stable-trigger
     triggers:
-      - timed: '@daily'
+      #- timed: '@daily'
+      - build-result:
+          combine: True
+          groups:
+            - jobs:
+                - build-automation-repo-2.6-testing
+                - build-automation-repo-2.7-testing
+              results:
+                - success
 
 - trigger:
     name: ci-ec2-single-node-upgrade-trigger
@@ -33,7 +51,8 @@
             - jobs:
               - ci-ec2-single-node-stable-trigger
 
-
+# ===================================================================
+# ===================================================================
 - publisher:
     name: ci-ec2-single-node-latest-publisher
     publishers:
