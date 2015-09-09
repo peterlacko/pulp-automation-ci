@@ -44,7 +44,7 @@
           rm -rf pulp-automation-ci
           git clone https://github.com/peterlacko/pulp-automation-ci
           cd pulp-automation-ci
-          cp -v $ANSIBLE_EC2_CREDENTIALS/ansible-pulp-automation-placko.pem .
+          cp -v $ANSIBLE_EC2_CREDENTIALS/$EC2_KEY_NAME.pem .
           ansible-playbook -i ec2.py test-scenarios/{scenario}/deploy.yml --extra-vars "@global_vars.yml"
           ansible-playbook -i ec2.py test-scenarios/{scenario}/configure.yml --extra-vars "@global_vars.yml"
           ansible-playbook -i ec2.py test-scenarios/{scenario}/run.yml --extra-vars "@global_vars.yml"

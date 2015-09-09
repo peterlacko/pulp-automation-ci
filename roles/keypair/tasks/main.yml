@@ -2,7 +2,7 @@
 - name: make sure local keys directory exists
   file:
     state: directory
-    path: "{{ playbook_dir }}/keys"
+    path: "{{ inventory_dir }}/keys"
 - name: remove existing keypair when force_keypair=True
   local_action:
     module: ec2_key
@@ -17,12 +17,10 @@
     region: "{{ region }}"
     wait: yes
   register: key_data
-- name: save the key file to local host
+- name: save the private key to local host
   local_action:
     module: copy
     content: "{{ key_data.key.private_key }}"
     dest: "keys/{{ key_name }}.pem"
     mode: 0600
   when: key_data.key.private_key|default(0)
-- name: debug keypair
-  debug: msg="{{ key_data }}"
