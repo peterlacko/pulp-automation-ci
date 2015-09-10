@@ -57,13 +57,13 @@
     name: ci-ec2-single-node-latest-publisher
     publishers:
       # Take the node offline so that another build doesn't pile on
-      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
+      #- groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
       - junit:
           results: "pulp-automation-ci/nosetests.xml"
       - archive:
-          artifacts: "pulp-automation-ci/logs.log"
+          artifacts: "pulp-automation-ci/*.log"
       - rich-text-publisher:
-          stable-text: "This is stable text"
+          stable-text: "This is publisher text from jenkins job builder"
           parser-name: HTML
 
 - publisher:
@@ -74,7 +74,7 @@
       - junit:
           results: "pulp-automation-ci/nosetests.xml"
       - archive:
-          artifacts: "pulp-automation-ci/logs.log"
+          artifacts: "pulp-automation-ci/*.log"
       - trigger-parameterized-builds:
           - project:
             - "pulp-single-node-upgrade-automation"
@@ -89,4 +89,4 @@
       - junit:
           results: "pulp-automation-ci/nosetests.xml"
       - archive:
-          artifacts: "pulp-automation-ci/logs.log"
+          artifacts: "pulp-automation-ci/*.log"
