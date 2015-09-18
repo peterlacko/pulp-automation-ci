@@ -11,6 +11,9 @@
   hosts:
     - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
   tasks:
+    - name: update all packages
+      action: "{{package_manager}} state=latest name=*"
+
     - name: get hostname 
       shell: curl -# http://169.254.169.254/latest/meta-data/public-hostname
       register: hostname
