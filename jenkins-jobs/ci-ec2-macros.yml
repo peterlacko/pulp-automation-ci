@@ -11,6 +11,13 @@
           - text:
               credential-id: e924c093-a9cd-47fd-9aae-3dfe615b4711
               variable: AWS_ACCESS_KEY_ID
+          - username-password-separated:
+              credential-id: 6d6e7fcb-aef9-4447-a281-f19190ab6ea4
+              username: RHN_USERNAME
+              password: RHN_PASSWORD
+          - text:
+              credential-id: f62328f1-2694-4df8-8f40-8efd08d3d28e
+              variable: RHN_POOLID
       - workspace-cleanup:
           include:
             - "*.pem"
@@ -25,7 +32,6 @@
           combine: True
           groups:
             - jobs:
-                - build-automation-repo-2.6-testing
                 - build-automation-repo-2.7-testing
               results:
                 - success
@@ -38,7 +44,6 @@
           combine: True
           groups:
             - jobs:
-                - build-automation-repo-2.6-testing
                 - build-automation-repo-2.7-testing
               results:
                 - success
@@ -71,8 +76,8 @@
     publishers:
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
-      - junit:
-          results: "pulp-automation-ci/nosetests.xml"
+      #- junit:
+      #    results: "pulp-automation-ci/nosetests.xml"
       - archive:
           artifacts: "pulp-automation-ci/*.log"
       - trigger-parameterized-builds:

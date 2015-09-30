@@ -29,6 +29,7 @@
     ami_auto_runner: "{{ami_rhel6}}"
     rem_user_auto_runner: ec2-user
   when: auto_runner_os =="rhel6"
+
 - name: set ami and user based on Operating System
   set_fact:
     automation_ami: "{{ami_fedora22}}"
@@ -39,6 +40,11 @@
     automation_ami: "{{ami_rhel7}}"
     automation_rem_user: ec2-user
   when: automation_os =="rhel7"
+- name: set ami and user based on Operating System
+  set_fact:
+    automation_ami: "{{ami_rhel7_2}}"
+    automation_rem_user: ec2-user
+  when: automation_os =="rhel7_2"
 - name: set ami and user based on Operating System
   set_fact:
     automation_ami: "{{ami_rhel6}}"

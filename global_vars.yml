@@ -41,10 +41,14 @@ repos_list:
 automation_name:  "{{lookup ('env', 'AUTOMATION_NAME')}}"
 
 ##########################################################################
-# Do not modify this section unless necessary
 # ec2 credentials used by boto and s3cmd, set as env variable 
 access_key: "{{lookup ('env', 'AWS_ACCESS_KEY_ID')}}" 
 secret_access_key: "{{lookup ('env', 'AWS_SECRET_ACCESS_KEY')}}"
+
+# RHN credentials for accesing RH channels
+RHN_username: "{{lookup ('env', 'RHN_USERNAME')}}"
+RHN_password: "{{lookup ('env', 'RHN_PASSWORD')}}"
+RHN_poolid: "{{lookup ('env', 'RHN_POOLID')}}"
 
 # reposerver relevant variables
 # repositories for rpms
@@ -56,4 +60,5 @@ automation_dir: /root/pulp-automation
 ami_fedora22: ami-55146222
 ami_rhel7: ami-25158352 
 ami_rhel6: ami-2591fe52
+ami_rhel7_2: ami-960c56e1
 ##########################################################################

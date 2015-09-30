@@ -13,7 +13,7 @@
     - name: remove previous automation
       file: path={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} state=absent
     - name: checkout automation repositories
-      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} force=yes"
+      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}} force=yes version=pulp-{{tested_version}}"
 
 - name: Configure inventory
   hosts:
@@ -25,15 +25,8 @@
 - name: Update pulp
   hosts:
     - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest"
-  pre_tasks:
-    - name: remove previous repo file
-      file: path=/etc/yum.repos.d/fedora-pulp.repo state=absent
-      when: "ansible_distribution=='Fedora'"
-    - name: remove previous repo file
-      file: path=/etc/yum.repos.d/rhel-pulp.repo state=absent
-      when: "ansible_distribution=='RedHat'"
   roles:
-    - { role: testing-repos-setup, my_tested_version: "{{tested_version}}", my_tested_branch: "{{tested_branch}}"}
+    - { role: repos-setup, test_stable: False}
   post_tasks:
     - name: update all packages
       action: "{{package_manager}} name=* state=latest"

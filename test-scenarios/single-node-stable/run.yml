@@ -7,7 +7,7 @@
     - name: remove previous automation
       file: path={{automation_dir}}-single-stable-to-latest-stable-{{tested_version}}-{{automation_os}} state=absent
     - name: checkout automation repositories
-      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-stable-to-latest-stable-{{tested_version}}-{{automation_os}} force=yes"
+      git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-stable-to-latest-stable-{{tested_version}}-{{automation_os}} force=yes version=pulp-{{tested_version}}"
       #TODO: ugly! copy remote-remote
     - name: fetch pubkey for copying to other hosts
       fetch: src=/root/.ssh/test_rsa.pub dest=./ flat=yes

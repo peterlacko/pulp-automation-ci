@@ -1,0 +1,36 @@
+---
+- name: subscription-manager - register system
+  shell: "subscription-manager register --force --username {{RHN_username}} --password {{RHN_password}}"
+  when: "ansible_distribution=='RedHat'"
+- name: "subscription-manager - attach subscription"
+  shell: "subscription-manager attach --pool {{RHN_poolid}}"
+  when: "ansible_distribution=='RedHat'"
+- name: "subscription-manager - disable all repos"
+  shell: "subscription-manager repos --disable '*'"
+  when: "ansible_distribution=='RedHat'"
+- name: "subscription-manager - enable optional and extras repos"
+  shell: "subscription-manager repos --enable rhel-{{ansible_distribution_version|int}}-server-optional-rpms --enable rhel-{{ansible_distribution_version|int}}-server-extras-rpms"
+  when: "ansible_distribution=='RedHat'"
+- name: install EPEL repo
+  action: "{{package_manager}} name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ansible_distribution_version|int}}.noarch.rpm state=present"
+  when: "ansible_distribution=='RedHat'"
+
+- name: Setup repos for stable pulp in Fedora
+  template: "src=fedora-pulp-stable.repo dest=/etc/yum.repos.d/fedora-pulp.repo"
+  when: "ansible_distribution=='Fedora' and test_stable == True"
+- name: setup repos for stable pulp in redhat
+  template: "src=rhel-pulp-stable.repo dest=/etc/yum.repos.d/rhel-pulp.repo"
+  when: "ansible_distribution=='RedHat' and test_stable == True"
+
+#- name: download repo file from s3repos/current for fedora systems
+#  command: "curl -o /etc/yum.repos.d/fedora-pulp-s3.repo http://s3-{{region}}.amazonaws.com/{{bucket_name}}/current/data/fedora-pulp-s3.repo"
+#  when: "ansible_distribution=='Fedora' and test_stable==False"
+#- name: download repo file from s3repos/current for redhat systems
+#  command: "curl -o /etc/yum.repos.d/rhel-pulp-s3.repo http://s3-{{region}}.amazonaws.com/{{bucket_name}}/current/data/rhel-pulp-s3.repo"
+#  when: "ansible_distribution=='RedHat' and test_stable==False"
+- name: setup pulp testing repo for fedora
+  template: "src=fedora-pulp-testing.repo dest=/etc/yum.repos.d/fedora-pulp.repo"
+  when: "ansible_distribution=='Fedora' and test_stable == False"
+- name: setup testing repo for RedHat 
+  template: "src=rhel-pulp-testing.repo dest=/etc/yum.repos.d/rhel-pulp.repo"
+  when: "ansible_distribution=='RedHat' and test_stable == False"
