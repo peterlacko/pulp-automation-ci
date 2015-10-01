@@ -11,10 +11,12 @@
           - text:
               credential-id: e924c093-a9cd-47fd-9aae-3dfe615b4711
               variable: AWS_ACCESS_KEY_ID
-          - username-password-separated:
-              credential-id: 6d6e7fcb-aef9-4447-a281-f19190ab6ea4
-              username: RHN_USERNAME
-              password: RHN_PASSWORD
+          - text:
+              credential-id: 8a20deda-140d-4df6-9b72-72c2fcf52d72
+              variable: RHN_USERNAME
+          - text:
+              credential-id: 7a7ab923-cf31-48f3-93ed-a5e573cc3340
+              variable: RHN_PASSWORD
           - text:
               credential-id: f62328f1-2694-4df8-8f40-8efd08d3d28e
               variable: RHN_POOLID
