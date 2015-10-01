@@ -7,6 +7,12 @@
     - logs-rotate
     - set-package-manager
 
+- name: Configure node - setup repositories 
+  hosts:
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
+  roles:
+    - { role: repos-setup, test_stable: False }
+
 - name: Configure node - install and enable pulp 
   hosts:
     - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
@@ -38,12 +44,6 @@
         state=present
         line='{{ipv4addr.stdout}} {{hostname.stdout}}'
 
-
-- name: Configure node - setup repositories 
-  hosts:
-    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
-  roles:
-    - { role: repos-setup, test_stable: False }
 
 - name: Configure node - install and enable pulp 
   hosts:
