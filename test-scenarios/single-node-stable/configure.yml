@@ -7,6 +7,13 @@
     - logs-rotate
     - set-package-manager
 
+- name: Configure node - setup repositories 
+  hosts:
+    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest"
+  roles:
+    - { role: repos-setup, test_stable: False }
+
+
 - name: Configure node - configure node
   hosts:
     - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest"
@@ -38,20 +45,12 @@
     # configure repos
     # set up latest stable pulp
 
-- name: Configure node - setup repositories 
-  hosts:
-    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest"
-  roles:
-    - repos-setup
-
 - name: Configure node - install and enable pulp 
   hosts:
     - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest"
   tasks:
-    - name: install extras packages for redhat
-      action: "{{package_manager}} name=ftp{{':'}}//ftp.muug.mb.ca/mirror/centos/7.1.1503/extras/x86_64/Packages/python-blinker-1.3-2.el7.noarch.rpm state=present"
-      when: "ansible_distribution=='RedHat' and ansible_distribution_version|int==7"
-
+    - name: update all packages
+      action: "{{package_manager}} name=* state=latest"
     # install pulp
     - name: install necessary packages
       action: "{{package_manager}} name={{item}} state=latest"

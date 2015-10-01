@@ -24,6 +24,12 @@
           Name: "{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node" 
         exact_count: 1
       register: ec2
+    - name: add additional ssd volume
+      ec2_vol:
+        instance: "{{ item.id }}"
+        volume_size: 10
+        volume_type: gp2
+      with_items: ec2.instances
     - name: Add new instance to host group
       add_host: hostname={{ item.public_ip }} groupname=launched
       with_items: ec2.instances

@@ -35,6 +35,7 @@
           properties-file: $ANSIBLE_EC2_CREDENTIALS/ec2-properties.prop
           properties-content: |
             TESTED_BRANCH=testing
+            PYTHONUNBUFFERED=1
       - shell: |
           sudo yum -y install python-boto python-six libselinux-python python-virtualenv
           virtualenv automation --system-site-packages
