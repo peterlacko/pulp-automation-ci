@@ -26,8 +26,8 @@ ROLES:
     id: my_consumer
     hostname: "{{hostvars[groups['tag_Name_'+automation_name+'_'+tested_version|replace('.','_')+'_'+automation_os+'_'+consumer_node][0]]['ec2_public_dns_name']}}"
     ssh_key: /root/.ssh/test_rsa
-    verify: 
-    ca_path:
+    verify: True
+    ca_path: /etc/pki/tls/certs/myca.crt
     os:
       name: {{ansible_distribution}}
       version: {{ansible_distribution_version}}
