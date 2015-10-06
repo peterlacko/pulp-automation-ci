@@ -1,0 +1,19 @@
+#!/bin/sh
+
+all_services=( "httpd" "pulp_workers" "pulp_worker-0" "pulp_celerybeat" "pulp_resource_manager" "qpidd" )
+for s in "${all_services[@]}"
+do
+   service $s stop
+done
+
+mongo pulp_database --eval "db.dropDatabase()"
+service qpidd start
+sudo -u apache pulp-manage-db
+
+rest_services=( "httpd" "pulp_workers" "pulp_worker"-"0" "pulp_celerybeat" "pulp_resource_manager" )
+for s in "${rest_services[@]}"
+do
+    service $s start
+done
+
+exit 0

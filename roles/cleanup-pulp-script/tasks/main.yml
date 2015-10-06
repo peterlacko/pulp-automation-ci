@@ -1,0 +1,3 @@
+---
+- name: Copy script for restarting services to remote host
+  template: src=cleanup-pulp dest=/usr/bin/cleanup-pulp mode=0700

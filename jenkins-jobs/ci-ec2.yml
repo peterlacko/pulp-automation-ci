@@ -42,7 +42,7 @@
           source automation/bin/activate
           pip install --upgrade pip
           #pip install git+https://github.com/ansible/ansible
-          pip install ansible
+          pip install git+https://github.com/ansible/ansible.git@stable-1.9
           rm -rf pulp-automation-ci
           git clone https://github.com/peterlacko/pulp-automation-ci
           cd pulp-automation-ci

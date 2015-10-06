@@ -49,3 +49,9 @@
       with_items:
         - "sed -i s,disable_root:.*,disable_root:0, /etc/cloud/cloud.cfg"
         - "cat ~{{ hostvars['localhost']['automation_rem_user'] }}/.ssh/authorized_keys > /root/.ssh/authorized_keys"
+
+- name: Copy scripts for managing pulp to remote host
+  remote_user: root
+  hosts: launched
+  roles:
+    - cleanup-pulp-script
