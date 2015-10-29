@@ -64,3 +64,4 @@
       - single-node-latest
       - single-node-stable
       - single-node-upgrade
+      - single-node-beta

@@ -15,6 +15,7 @@
   action: "{{package_manager}} name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ansible_distribution_version|int}}.noarch.rpm state=present"
   when: "ansible_distribution=='RedHat'"
 
+# Stable repositories
 - name: Setup repos for stable pulp in Fedora
   template: "src=fedora-pulp-stable.repo dest=/etc/yum.repos.d/fedora-pulp.repo"
   when: "ansible_distribution=='Fedora' and test_stable == True"
@@ -28,9 +29,19 @@
 #- name: download repo file from s3repos/current for redhat systems
 #  command: "curl -o /etc/yum.repos.d/rhel-pulp-s3.repo http://s3-{{region}}.amazonaws.com/{{bucket_name}}/current/data/rhel-pulp-s3.repo"
 #  when: "ansible_distribution=='RedHat' and test_stable==False"
+
+# Setup testing repositories
 - name: setup pulp testing repo for fedora
   template: "src=fedora-pulp-testing.repo dest=/etc/yum.repos.d/fedora-pulp.repo"
   when: "ansible_distribution=='Fedora' and test_stable == False"
 - name: setup testing repo for RedHat 
   template: "src=rhel-pulp-testing.repo dest=/etc/yum.repos.d/rhel-pulp.repo"
   when: "ansible_distribution=='RedHat' and test_stable == False"
+
+  # Setup beta repositories
+- name: setup pulp beta repo for fedora
+  template: "src=fedora-pulp-beta.repo dest=/etc/yum.repos.d/fedora-pulp.repo"
+  when: "ansible_distribution=='Fedora' and test_beta == True and test_stable == False"
+- name: setup beta repo for RedHat 
+  template: "src=rhel-pulp-beta.repo dest=/etc/yum.repos.d/rhel-pulp.repo"
+  when: "ansible_distribution=='RedHat' and test_beta == True and test_stable == False"

@@ -29,26 +29,12 @@
 - trigger:
     name: ci-ec2-single-node-latest-trigger
     triggers:
-      #- timed: '@daily'
-      - build-result:
-          combine: True
-          groups:
-            - jobs:
-                - build-automation-repo-2.7-testing
-              results:
-                - success
+      - timed: '@daily'
 
 - trigger:
     name: ci-ec2-single-node-stable-trigger
     triggers:
-      #- timed: '@daily'
-      - build-result:
-          combine: True
-          groups:
-            - jobs:
-                - build-automation-repo-2.7-testing
-              results:
-                - success
+      - timed: '@daily'
 
 - trigger:
     name: ci-ec2-single-node-upgrade-trigger
@@ -57,6 +43,11 @@
           groups:
             - jobs:
               - pulp-single-node-stable-automation
+
+- trigger:
+    name: ci-ec2-single-node-beta-trigger
+    triggers:
+      - timed: '@weekly'
 
 # ===================================================================
 # ===================================================================
@@ -90,6 +81,16 @@
 
 - publisher:
     name: ci-ec2-single-node-upgrade-publisher
+    publishers:
+      # Take the node offline so that another build doesn't pile on
+      - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"
+      - junit:
+          results: "pulp-automation-ci/nosetests.xml"
+      - archive:
+          artifacts: "pulp-automation-ci/*.log"
+
+- publisher:
+    name: ci-ec2-single-node-beta-publisher
     publishers:
       # Take the node offline so that another build doesn't pile on
       - groovy-postbuild: "manager.build.getBuiltOn().toComputer().setTemporarilyOffline(true)"

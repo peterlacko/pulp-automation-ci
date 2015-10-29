@@ -4,6 +4,7 @@
 # set test_stable to true when you want to test latest stable versions of pulp
 # TODO: split variables into groups: global, per test-case, etc
 test_stable: False
+test_beta: True
 
 # name of the key for comunicating with instances, located in ansible_dir/keys
 key_name:   "{{lookup ('env', 'EC2_KEY_NAME')}}"
