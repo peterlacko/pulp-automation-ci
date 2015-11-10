@@ -1,16 +1,16 @@
 ---
-- name: subscription-manager - register system
-  shell: "subscription-manager register --force --username {{RHN_username}} --password {{RHN_password}}"
-  when: "ansible_distribution=='RedHat'"
-- name: "subscription-manager - attach subscription"
-  shell: "subscription-manager attach --pool {{RHN_poolid}}"
-  when: "ansible_distribution=='RedHat'"
-- name: "subscription-manager - disable all repos"
-  shell: "subscription-manager repos --disable '*'"
-  when: "ansible_distribution=='RedHat'"
-- name: "subscription-manager - enable optional and extras repos"
-  shell: "subscription-manager repos --enable rhel-{{ansible_distribution_version|int}}-server-optional-rpms --enable rhel-{{ansible_distribution_version|int}}-server-extras-rpms"
-  when: "ansible_distribution=='RedHat'"
+#- name: subscription-manager - register system
+#  shell: "subscription-manager register --force --username {{RHN_username}} --password {{RHN_password}}"
+#  when: "ansible_distribution=='RedHat'"
+#- name: "subscription-manager - attach subscription"
+#  shell: "subscription-manager attach --pool {{RHN_poolid}}"
+#  when: "ansible_distribution=='RedHat'"
+#- name: "subscription-manager - disable all repos"
+#  shell: "subscription-manager repos --disable '*'"
+#  when: "ansible_distribution=='RedHat'"
+#- name: "subscription-manager - enable optional and extras repos"
+#  shell: "subscription-manager repos --enable rhel-{{ansible_distribution_version|int}}-server-optional-rpms --enable rhel-{{ansible_distribution_version|int}}-server-extras-rpms"
+#  when: "ansible_distribution=='RedHat'"
 - name: install EPEL repo
   action: "{{package_manager}} name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ansible_distribution_version|int}}.noarch.rpm state=present"
   when: "ansible_distribution=='RedHat'"

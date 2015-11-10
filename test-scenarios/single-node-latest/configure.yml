@@ -59,7 +59,7 @@
       with_items:
         - mongodb-server
         - qpid-cpp-server
-        - qpid-cpp-server-store
+        - qpid-cpp-server-linearstore
         - python-devel
         - git
         - tito
