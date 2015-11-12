@@ -1,0 +1,50 @@
+---
+- name: Create the index.txt file
+  file:
+    path=/etc/pki/CA/index.txt
+    state=touch
+- name: Create a serial file to label the CA and all subsequent certificates
+  lineinfile:
+    dest=/etc/pki/CA/serial
+    create=yes
+    line=01
+# generate certificates
+- name: generate cert for use with pulp
+  command:
+    'openssl req -new -x509 -nodes -out certs/myca.crt -keyout private/myca.key -subj "/C=US/ST=NC/L=Raleigh/O=Ltd/CN={{hostname.stdout}}"
+    chdir=/etc/pki/CA
+    creates=certs/myca.crt'
+- name: set file permissions
+  file:
+    path=/etc/pki/CA/certs/myca.crt
+    mode=0400
+
+- name: generate apache Certificate Signing Request
+  command:
+    'openssl req -new -nodes -keyout private/apache.key -out apache.csr -subj "/C=US/ST=NC/L=Raleigh/O=Ltd/CN={{hostname.stdout}}"
+    chdir=/etc/pki/CA
+    creates=apache.csr'
+- name: change owner and permissions
+  file:
+    path=/etc/pki/CA/apache.csr 
+    mode=0440
+    owner=root
+    group=apache
+- name: sign apache
+  command:
+    openssl ca -batch -cert certs/myca.crt -keyfile private/myca.key -out certs/apache.crt -in apache.csr
+    creates=certs/apache.crt
+    chdir=/etc/pki/CA
+- name: copy remote to remote
+  command:
+    cp /etc/pki/CA/certs/myca.crt {{ca_path}}
+- name: set apache certificate file
+  replace: 
+    dest=/etc/httpd/conf.d/ssl.conf
+    regexp='^#?\s*SSLCertificateFile.*$'
+    replace='SSLCertificateFile /etc/pki/CA/certs/apache.crt'
+- name: set apache key file
+  replace: 
+    dest=/etc/httpd/conf.d/ssl.conf
+    regexp='^#?\s*SSLCertificateKeyFile.*$'
+    replace='SSLCertificateKeyFile /etc/pki/CA/private/apache.key'

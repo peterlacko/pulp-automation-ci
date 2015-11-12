@@ -1,0 +1,3 @@
+---
+- name: Install mongodb, start and enable mongod service
+  action: "{{package_manager}} name=mongodb-server state=latest"

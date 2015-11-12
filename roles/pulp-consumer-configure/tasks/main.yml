@@ -1,0 +1,3 @@
+---
+- name: template consumer.conf file
+  template: src=consumer.conf dest=/etc/pulp/consumer/consumer.conf

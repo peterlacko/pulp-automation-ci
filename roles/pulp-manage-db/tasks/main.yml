@@ -1,0 +1,3 @@
+---
+- name: run pulp-manage-db as user apache
+  shell: "sudo -u apache pulp-manage-db"

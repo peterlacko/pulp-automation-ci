@@ -1,0 +1,4 @@
+---
+- name: Simple qpid configuration withou ssl
+  template: src=qpidd.conf dest=/etc/qpid/qpidd.conf
+  when: secure==false

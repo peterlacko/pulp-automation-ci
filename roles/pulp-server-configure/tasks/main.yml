@@ -1,0 +1,13 @@
+---
+- name: Modify /etc/pulp/server.conf file - set url for messaging and broker
+  template: src=server.conf dest=/etc/pulp/server.conf
+  #- name: modify url for messages.
+  #  replace:
+  #    dest=/etc/pulp/server.conf
+  #    regexp='(?sm)(^\[messaging\][^\[]*?)^#\s*url:\s*tcp://.*?:5672'
+  #    replace='\1url:tcp://{{hostname.stdout}}:5672'
+  #- name: url to broker for celery 
+  #  replace:
+  #    dest=/etc/pulp/server.conf
+  #    regexp='(?sm)(^\[tasks\][^\[]*?)^#\s*broker_url:\s*qpid://.*?/'
+  #    replace='\1broker_url:qpid://{{hostname.stdout}}:5672'

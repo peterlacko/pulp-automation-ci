@@ -3,8 +3,8 @@
 # !!!! can cause problems with discovering hosts in dynamic inventory !!!!
 # set test_stable to true when you want to test latest stable versions of pulp
 # TODO: split variables into groups: global, per test-case, etc
-test_stable: False
-test_beta: True
+test_stable: "{{lookup ('env', 'PULP_TEST_STABLE') | bool}}" 
+test_beta: "{{lookup ('env', 'PULP_TEST_BETA') | bool}}"
 
 # name of the key for comunicating with instances, located in ansible_dir/keys
 key_name:   "{{lookup ('env', 'EC2_KEY_NAME')}}"

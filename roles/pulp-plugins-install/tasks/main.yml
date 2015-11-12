@@ -1,0 +1,9 @@
+---
+- name: Install all pulp plugins/extensions
+  action: "{{package_manager}} name={{item}} state=latest"
+  with_items:
+    - pulp-docker-plugins
+    - pulp-rpm-plugins
+    - pulp-puppet-plugins
+    - pulp-docker-admin-extensions
+    - python-pulp-docker-common

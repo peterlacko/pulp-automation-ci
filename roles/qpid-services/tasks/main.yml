@@ -1,0 +1,3 @@
+---
+- name: Manage qpidd service
+  service: name=qpidd state={{state}} enabled={{enabled}}

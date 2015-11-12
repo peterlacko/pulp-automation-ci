@@ -1,0 +1,3 @@
+---
+- name: Install qpid pulp server
+  action: "{{package_manager}} name='@pulp-server-qpid' state=present"

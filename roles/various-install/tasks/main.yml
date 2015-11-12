@@ -1,0 +1,6 @@
+---
+- name: Packages that need to be installed in order for pulp to run properly
+  action: "{{package_manager}} name={{item}} state=latest"
+  with_items:
+    - python-qpid-qmf
+    - qpid-tools

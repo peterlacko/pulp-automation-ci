@@ -1,0 +1,3 @@
+---
+- name: Install pulp-consumer group
+  action: "{{package_manager}} name='@pulp-consumer-qpid' state=present"

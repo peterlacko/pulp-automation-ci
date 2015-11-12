@@ -1,0 +1,3 @@
+---
+- name: Manage gofer service
+  service: name=goferd state={{state}} enabled={{enabled}}

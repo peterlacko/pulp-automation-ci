@@ -1,0 +1,6 @@
+---
+- name: Install qpid
+  action: "{{package_manager}} name={{item}} state=latest"
+  with_items:
+    - qpid-cpp-server
+    - qpid-cpp-server-linearstore
