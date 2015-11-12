@@ -1,0 +1,70 @@
+---
+- name: Configure node - install and enable pulp 
+  hosts:
+    - "tag_Name_{{ lookup('env', 'EC2_TESTING_NODE')}}"
+  roles:
+    - set-package-manager
+
+- name: Setup all necessary repositories 
+  hosts:
+    - "tag_Name_{{ lookup('env', 'EC2_TESTING_NODE')}}"
+  roles:
+    - repos-setup
+
+- name: Update packages and do ec2 related configuration of machine
+  hosts:
+    - "tag_Name_{{ lookup('env', 'EC2_TESTING_NODE')}}"
+  tasks:
+    - name: update all packages
+      action: "{{package_manager}} state=latest name=*"
+
+    - name: fix systemd after upgrade in f22
+      shell: "systemctl daemon-reexec"
+      when: ansible_distribution == "Fedora" and ansible_distribution_version|int == 22
+
+    - name: get hostname 
+      shell: curl -# http://169.254.169.254/latest/meta-data/public-hostname
+      register: hostname
+
+    - name: set hostname
+      shell: "hostname {{hostname.stdout}}"
+
+    - name: edit /etc/sysconfig/network file
+      lineinfile:
+        dest=/etc/sysconfig/network
+        state=present
+        regexp='^HOSTNAME='
+        line=HOSTNAME={{hostname.stdout}}
+
+    - name: get public ipv4 address
+      shell: curl -# http://169.254.169.254/latest/meta-data/public-ipv4
+      register: ipv4addr
+
+    - name: add it to hosts file
+      lineinfile:
+        dest=/etc/hosts
+        state=present
+        line='{{ipv4addr.stdout}} {{hostname.stdout}}'
+
+- name: Install pulp and requred components according to installation guide 
+  hosts:
+    - "tag_Name_{{ lookup('env', 'EC2_TESTING_NODE')}}"
+  roles:
+  - mongodb-install
+  - { role: mongodb-services, state: started, enabled: true}
+  - qpid-install
+  - { role: qpid-services, state: started, enabled: true}
+  - { role: qpid-configure, secure: false}
+  - pulp-server-qpid-install
+  - pulp-plugins-install
+  - various-install
+  - cert-generate
+  - pulp-server-configure
+  - pulp-manage-db
+  - { role: apache-services, state: restarted, enabled: true}
+  - { role: pulp-services, state: restarted, enabled: true}
+  - pulp-admin-install
+  - pulp-admin-configure
+  - pulp-consumer-install
+  - pulp-consumer-configure
+  - { role: gofer-services, state: started, enabled: true}

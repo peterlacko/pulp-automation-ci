@@ -1,0 +1,55 @@
+---
+- name: set ami and user
+  hosts: localhost
+  roles:
+    - ami-user-set
+
+- name: Deploy a machine for single node testing
+  hosts: localhost
+  tasks:
+    - name: Launch ec2 single node testing instance
+      ec2:
+        key_name: "{{ key_name }}"
+        group: "{{ pulp_sg }}"
+        instance_type: "{{ instance_type }}"
+        image: "ami-a42a7bd3"
+        wait: true
+        region: "{{ region }}"
+        monitoring: no
+        assign_public_ip: no
+        instance_tags:
+          Name: "{{ lookup('env', 'EC2_TESTING_NODE') }}" 
+        count_tag:
+          Name: "{{ lookup('env', 'EC2_TESTING_NODE') }}" 
+        exact_count: 1
+      register: ec2
+    - name: add additional ssd volume
+      ec2_vol:
+        instance: "{{ item.id }}"
+        volume_size: 20
+        volume_type: gp2
+      with_items: ec2.instances
+    - name: Add new instance to host group
+      add_host: hostname={{ item.public_ip }} groupname=launched
+      with_items: ec2.instances
+    - name: Wait for SSH to come up
+      wait_for: host={{ item.public_dns_name }} port=22 delay=60 timeout=320 state=started
+      with_items: ec2.instances
+
+- name: Enable root access
+  remote_user: "{{hostvars['localhost']['automation_rem_user']}}"
+  hosts: launched
+  tasks:
+    - name: Enable root access
+      become: yes
+      become_method: sudo
+      shell: "{{item}}"
+      with_items:
+        - "sed -i s,disable_root:.*,disable_root:0, /etc/cloud/cloud.cfg"
+        - "cat ~{{hostvars['localhost']['automation_rem_user']}}/.ssh/authorized_keys > /root/.ssh/authorized_keys"
+
+- name: Copy scripts for managing pulp to remote host
+  remote_user: root
+  hosts: launched
+  roles:
+    - cleanup-pulp-script
