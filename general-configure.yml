@@ -50,21 +50,21 @@
   hosts:
     - "tag_Name_{{ lookup('env', 'EC2_TESTING_NODE')}}"
   roles:
-  - mongodb-install
-  - { role: mongodb-services, state: started, enabled: true}
-  - qpid-install
-  - { role: qpid-services, state: started, enabled: true}
-  - { role: qpid-configure, secure: false}
-  - pulp-server-qpid-install
-  - pulp-plugins-install
-  - various-install
-  - cert-generate
-  - pulp-server-configure
-  - pulp-manage-db
-  - { role: apache-services, state: restarted, enabled: true}
-  - { role: pulp-services, state: restarted, enabled: true}
-  - pulp-admin-install
-  - pulp-admin-configure
-  - pulp-consumer-install
-  - pulp-consumer-configure
-  - { role: gofer-services, state: started, enabled: true}
+    - mongodb-install
+    - { role: mongodb-services, state: started, enabled: true}
+    - qpid-install
+    - { role: qpid-services, state: started, enabled: true}
+    - { role: qpid-configure, secure: false}
+    - pulp-server-qpid-install
+    - pulp-plugins-install
+    - various-install
+    - cert-generate
+    - pulp-server-configure
+    - pulp-manage-db
+    - { role: apache-services, state: restarted, enabled: true}
+    - { role: pulp-services, state: restarted, enabled: true}
+    - pulp-admin-install
+    - pulp-admin-configure
+    - pulp-consumer-install
+    - pulp-consumer-configure
+    - { role: gofer-services, state: started, enabled: true}

@@ -5,7 +5,7 @@
   roles:
     - ami-user-set
 
-- name: Deploy a machine for single node stable-to-latest testing
+- name: Deploy a machine for single node single-node-upgrade testing
   hosts: localhost
   tasks:
     - name: Terminate instance first for clean pulp installation
@@ -14,8 +14,8 @@
         image: "{{ automation_ami }}"
         exact_count: 0
         count_tag:
-          Name: "{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest" 
-    - name: Launch new ec2 single node stable-to-latest testing instance
+          Name: "{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade" 
+    - name: Launch new ec2 single node single-node-upgrade testing instance
       ec2:
         key_name: "{{ key_name }}"
         group: "{{ pulp_sg }}"
@@ -26,9 +26,9 @@
         monitoring: no
         assign_public_ip: no
         instance_tags:
-          Name: "{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest" 
+          Name: "{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
         count_tag:
-          Name: "{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_stable_to_latest" 
+          Name: "{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
         exact_count: 1
       register: ec2
     - name: Add new instance to host group

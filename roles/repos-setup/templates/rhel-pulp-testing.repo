@@ -1,6 +1,0 @@
-[pulp-{{tested_version}}-{{tested_branch}}]
-name=Pulp {{tested_version}}-{{tested_branch}}
-baseurl=https://repos.fedorapeople.org/repos/pulp/pulp/testing/automation/{{tested_version}}/{{tested_branch}}/$releasever/$basearch/
-enabled=1
-skip_if_unavailable=1
-gpgcheck=0

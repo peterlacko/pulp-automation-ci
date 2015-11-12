@@ -2,21 +2,21 @@
 # vim:ft=ansible:
 - name: Rotate logs and set package manager 
   hosts:
-    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
+    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
   roles:
     - logs-rotate
     - set-package-manager
 
 - name: Setup all necessary repositories 
   hosts:
-    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
+    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
   roles:
     - repos-setup
-    - { role: repos-pulp-setup, stable: {{test_stable}}, beta: {{test_beta}}, version: {{tested_version}}}
+    - { role: repos-pulp-setup, stable: "{{upgrading_from_stable}}", beta: "{{upgrading_from_beta}}", version: "{{upgrading_from}}"}
 
 - name: Update packages and do ec2 related configuration of machine
   hosts:
-    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
+    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
   tasks:
     - name: update all packages
       action: "{{package_manager}} state=latest name=*"
@@ -51,7 +51,7 @@
 
 - name: Install pulp and requred components according to installation guide 
   hosts:
-    - "tag_Name_{{automation_name}}_{{tested_version|replace('.','_')}}_{{automation_os}}_single_node"
+    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
   roles:
   - mongodb-install
   - { role: mongodb-services, state: started, enabled: true}

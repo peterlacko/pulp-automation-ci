@@ -1,0 +1,6 @@
+[pulp-{{version}}-testing]
+name=Pulp {{version}}-testing
+baseurl=https://repos.fedorapeople.org/repos/pulp/pulp/testing/automation/{{version}}/testing/$releasever/$basearch/
+enabled=1
+skip_if_unavailable=1
+gpgcheck=0

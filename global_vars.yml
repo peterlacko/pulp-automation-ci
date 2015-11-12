@@ -3,8 +3,6 @@
 # !!!! can cause problems with discovering hosts in dynamic inventory !!!!
 # set test_stable to true when you want to test latest stable versions of pulp
 # TODO: split variables into groups: global, per test-case, etc
-test_stable: "{{lookup ('env', 'PULP_TEST_STABLE') | bool}}" 
-test_beta: "{{lookup ('env', 'PULP_TEST_BETA') | bool}}"
 
 # name of the key for comunicating with instances, located in ansible_dir/keys
 key_name:   "{{lookup ('env', 'EC2_KEY_NAME')}}"
@@ -31,8 +29,18 @@ bucket_name:  "{{lookup ('env', 'BUCKET_NAME')}}"
 
 # tested pulp relevant variables, upgrading_from can't be lower than tested_version
 tested_version: "{{lookup ('env', 'TESTED_VERSION')}}"
+test_stable: "{{lookup ('env', 'PULP_TEST_STABLE')}}" 
+test_beta: "{{lookup ('env', 'PULP_TEST_BETA')}}"
+
 upgrading_from: "{{lookup ('env', 'UPGRADING_FROM')}}"
-tested_branch: "{{lookup ('env', 'TESTED_BRANCH')}}"
+upgrading_from_stable: "{{lookup ('env', 'UPGRADING_FROM_STABLE')}}"
+upgrading_from_beta: "{{lookup ('env', 'UPGRADING_FROM_BETA')}}"
+
+upgrading_to: "{{lookup ('env', 'UPGRADING_TO')}}"
+upgrading_to_stable: "{{lookup ('env', 'UPGRADING_TO_STABLE')}}"
+upgrading_to_beta: "{{lookup ('env', 'UPGRADING_TO_BETA')}}"
+
+#tested_branch: "{{lookup ('env', 'TESTED_BRANCH')}}"
 repos_list:
   - pulp
   - pulp_rpm

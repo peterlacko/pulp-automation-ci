@@ -1,6 +1,0 @@
-[pulp-{{tested_version}}-beta]
-name=Pulp {{tested_version}}-beta
-baseurl=https://repos.fedorapeople.org/repos/pulp/pulp/beta/{{tested_version}}/fedora-$releasever/$basearch/
-enabled=1
-skip_if_unavailable=1
-gpgcheck=0

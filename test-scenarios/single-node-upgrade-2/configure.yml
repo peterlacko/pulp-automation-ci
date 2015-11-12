@@ -1,0 +1,8 @@
+---
+# vim:ft=ansible:
+- name: run logrotate to clean logs
+  hosts:
+    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
+  roles:
+    - logs-rotate
+    - repo-pulp-config
