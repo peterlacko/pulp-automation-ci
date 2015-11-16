@@ -2,12 +2,12 @@
 ROLES:
   pulp: &PULP
     auth: [admin, admin]
-    url: "https://{{hostvars[groups['tag_Name_'+automation_name+'_'+pulp_version|replace('.','_')+'_'+automation_os+'_'+producer_node][0]]['ec2_public_dns_name']}}/"
-    hostname: "{{hostvars[groups['tag_Name_'+automation_name+'_'+pulp_version|replace('.','_')+'_'+automation_os+'_'+producer_node][0]]['ec2_public_dns_name']}}"
+    url: "https://{{hostvars[groups['tag_Name_'+producer_tag_name][0]]['ec2_public_dns_name']}}/"
+    hostname: "{{hostvars[groups['tag_Name_'+producer_tag_name][0]]['ec2_public_dns_name']}}"
     verify_api_ssl: 'myca.crt'
     version: "{{pulp_version}}"
   qpid: &QPID
-    url: "{{hostvars[groups['tag_Name_'+automation_name+'_'+pulp_version|replace('.','_')+'_'+automation_os+'_'+producer_node][0]]['ec2_public_dns_name']}}"
+    url: "{{hostvars[groups['tag_Name_'+producer_tag_name][0]]['ec2_public_dns_name']}}"
   proxy: &SQUID
     host:
     port:
@@ -24,7 +24,7 @@ ROLES:
   consumers:
   - &MY_CONSUMER
     id: my_consumer
-    hostname: "{{hostvars[groups['tag_Name_'+automation_name+'_'+pulp_version|replace('.','_')+'_'+automation_os+'_'+consumer_node][0]]['ec2_public_dns_name']}}"
+    hostname: "{{hostvars[groups['tag_Name_'+consumer_tag_name][0]]['ec2_public_dns_name']}}"
     ssh_key: /root/.ssh/test_rsa
     verify: True
     ca_path: /etc/pki/tls/certs/myca.crt

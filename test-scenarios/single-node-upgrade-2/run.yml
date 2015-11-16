@@ -14,40 +14,42 @@
       file: path={{automation_dir}}-single-node-upgrade-{{upgrading_from}}-to-{{upgrading_to}}-{{automation_os}} state=absent
     - name: checkout automation repositories
       git: "repo=https://github.com/RedHatQE/pulp-automation dest={{automation_dir}}-single-node-upgrade-{{upgrading_from}}-to-{{upgrading_to}}-{{automation_os}} force=yes version=pulp-{{tested_version}}"
+    - name: fetch pubkey for copying to other hosts
+      fetch: src=/root/.ssh/test_rsa.pub dest=./ flat=yes
 
 - name: Configure inventory
   hosts:
     - "tag_Name_{{automation_name}}_automation_runner"
   roles:
-  - {role: single-inventory-config, path: "single-node-upgrade-{{upgrading_from}}-to-{{upgrading_to}}-{{automation_os}}", producer_node: single_node_upgrade, consumer_node: single_node_upgrade, pulp_version: {{tested_version}}}
-    - {role: pulp-run-setup, path: "single-node-upgrade-{{upgrading_from}}-to-{{upgrading_to}}-{{automation_os}}"}
+    - { role: single-inventory-config,
+      path: "single-node-upgrade-{{upgrading_from}}-to-{{upgrading_to}}-{{automation_os}}",
+      producer_tag_name: "{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade",
+      consumer_tag_name: "{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade",
+      pulp_version: "{{tested_version}}"}
+    - { role: pulp-run-setup, path: "single-node-upgrade-{{upgrading_from}}-to-{{upgrading_to}}-{{automation_os}}"}
 
-- name: Update pulp
-  hosts:
-    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
-  roles:
-    - { role: repos-setup, test_stable: False}
-  post_tasks:
-    - name: update all packages
-      action: "{{package_manager}} name=* state=latest"
-    - name: temporarily disable SE linux on feodra 22
-      selinux: policy=targeted state=permissive
-      when: "ansible_distribution=='Fedora' and ansible_distribution_version|int==22"
-   
-- name: Cleanup pulp
+- name: Copy key to remote host
   hosts:
     - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
   roles:
     - cleanup-pulp
+
+- name: Copy key to remote host
+  hosts:
+    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
+  tasks:
+    - name: ensure automation_runner is between authorized hosts
+      authorized_key: user=root key="{{ lookup('file', 'test_rsa.pub') }}"
+
 
 - name: Run automation from automation runner
   hosts:
     - "tag_Name_{{automation_name}}_automation_runner"
   tasks:
     - name: copy certificate file to automation runner
-      command: "scp -o StrictHostKeyChecking=no -i /root/.ssh/test_rsa root@{{hostvars[groups['tag_Name_'+automation_name+'_'+upgrading_from|replace('.','_')+'_to_'+upgrading_to|replace('.','_')+automation_os+'_single_node_upgrade'][0]]['ec2_public_dns_name']}}{{':'}}/etc/pki/tls/certs/pulp-cert.crt {{automation_dir}}-single-stable-to-latest-latest-{{tested_version}}-{{automation_os}}/"
-    - name: run all tests on single node - latest
-      command: "chdir={{automation_dir}}-single-node-upgrade-{{upgrading_from}}-to-{{upgrading_from}}-{{automation_os}} nosetests -vs --with-xunit"
+      command: "scp -o StrictHostKeyChecking=no -i /root/.ssh/test_rsa root@{{hostvars[groups['tag_Name_'+automation_name+'_'+upgrading_from|replace('.','_')+'_to_'+upgrading_to|replace('.','_')+'_'+automation_os+'_single_node_upgrade'][0]]['ec2_public_dns_name']}}{{':'}}/etc/pki/tls/certs/pulp-cert.crt {{automation_dir}}-single-node-upgrade-{{upgrading_from}}-to-{{upgrading_to}}-{{automation_os}}/"
+    - name: run all tests on single node 
+      command: "chdir={{automation_dir}}-single-node-upgrade-{{upgrading_from}}-to-{{upgrading_to}}-{{automation_os}} nosetests -vs --with-xunit"
       ignore_errors: True
       tags:
         - run_automation

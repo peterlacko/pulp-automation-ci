@@ -10,6 +10,7 @@
     - "tag_Name_{{ lookup('env', 'EC2_TESTING_NODE')}}"
   roles:
     - repos-setup
+    - { role: repos-pulp-setup, stable: "{{test_stable}}", beta: "{{test_beta}}", version: "{{tested_version}}"}
 
 - name: Update packages and do ec2 related configuration of machine
   hosts:

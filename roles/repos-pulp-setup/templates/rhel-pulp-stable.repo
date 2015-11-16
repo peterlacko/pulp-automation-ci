@@ -1,6 +1,6 @@
 [pulp-stable]
 name=Pulp Production Releases
-baseurl=https://repos.fedorapeople.org/repos/pulp/pulp/stable/latest/$releasever/$basearch/
+baseurl=https://repos.fedorapeople.org/repos/pulp/pulp/stable/{{version}}/$releasever/$basearch/
 enabled=1
 skip_if_unavailable=1
 gpgcheck=0

@@ -1,8 +1,30 @@
 ---
 # vim:ft=ansible:
-- name: run logrotate to clean logs
+- name: Set package manager, rotate logs and stop services
   hosts:
     - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
   roles:
+    - set-package-manager
     - logs-rotate
-    - repo-pulp-config
+    - { role: repos-pulp-setup, stable: "{{upgrading_to_stable}}", beta: "{{upgrading_to_beta}}", version: "{{upgrading_to}}"}
+    - { role: pulp-services, state: stopped }
+    - { role: qpid-services, state: stopped }
+    - { role: apache-services, state: stopped }
+
+- name: Update all packages
+  hosts:
+    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
+  tasks:
+    - name: clean up yum
+      shell: "{{package_manager}} clean all"
+    - name: Update all packages on system
+      action: "{{package_manager}} state=latest name=*"
+
+- name: migrate database and start services
+  hosts:
+    - "tag_Name_{{automation_name}}_{{upgrading_from|replace('.','_')}}_to_{{upgrading_to|replace('.','_')}}_{{automation_os}}_single_node_upgrade"
+  roles:
+    - { role: qpid-services, state: started }
+    - pulp-manage-db
+    - { role: apache-services, state: started }
+    - { role: pulp-services, state: started }

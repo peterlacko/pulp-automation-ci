@@ -1,8 +1,8 @@
 ---
 # vim:ft=ansible:
 # We will populate pulp with data here .. or something
-name: Dummy role
-hosts: localhost
+- name: Dummy role
+  hosts: localhost
   roles:
     - dummy-role
 
